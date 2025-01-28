@@ -1,3 +1,4 @@
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.ext.associationproxy import association_proxy
 
@@ -28,9 +29,11 @@ class Client(db.Model):
 # HealthcareProfessional Model (One-to-Many Relationship with Appointments and Many-to-Many with Specializations)
 class HealthcareProfessional(db.Model):
     __tablename__ = 'healthcare_professionals'
+    
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-
+    
+    
     # One-to-many relationship: a healthcare professional can have many appointments
     appointments = db.relationship('Appointment', backref='healthcare_professional', lazy=True)
 
@@ -40,8 +43,10 @@ class HealthcareProfessional(db.Model):
     def to_dict(self):
         return {
             'id': self.id,
-            'name': self.name
+            'name': self.name,
+        
         }
+
 
 # Specialization Model (Many-to-Many Relationship with HealthcareProfessionals)
 class Specialization(db.Model):
