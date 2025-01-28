@@ -1,6 +1,13 @@
-from flask_restful import Resource
+from flask import Blueprint, request, jsonify 
+from flask_restful import Api, Resource
 from flask import request, jsonify
 from .models import db, HealthcareProfessional, Specialization, Appointment
+
+
+api_bp = Blueprint('api', __name__)
+
+# Create the API object
+api = Api(api_bp)
 
 # HealthcareProfessional Resource
 class HealthcareProfessionalResource(Resource):
