@@ -1,17 +1,51 @@
-from flask import Blueprint, request, jsonify 
+from flask import Blueprint, request, jsonify
 from flask_restful import Api, Resource
-from flask import request, jsonify
-from .models import db, HealthcareProfessional, Specialization, Appointment
+from .models import db, HealthcareProfessional, Specialization, Appointment, Client
 
-
+# Initialize the API Blueprint
 api_bp = Blueprint('api', __name__)
 
 # Create the API object
 api = Api(api_bp)
 
+# Clients Resource
+class ClientResource(Resource):
+    # Read (All Items)
+    def get(self):
+        clients = Client.query.all()
+        return jsonify([client.to_dict() for client in clients])
+
+    # Create (Single Client)
+    def post(self):
+        data = request.get_json()
+        if not data.get('name') or not data.get('email'):
+            return jsonify({"error": "Name and Email are required"}), 400
+        new_client = Client(name=data['name'], email=data['email'])
+        db.session.add(new_client)
+        db.session.commit()
+        return jsonify(new_client.to_dict()), 201
+
+    # Update (Single Client)
+    def put(self, id):
+        client = Client.query.get_or_404(id)
+        data = request.get_json()
+        if 'name' in data:
+            client.name = data['name']
+        if 'email' in data:
+            client.email = data['email']
+        db.session.commit()
+        return jsonify(client.to_dict())
+
+    # Delete (Single Client)
+    def delete(self, id):
+        client = Client.query.get_or_404(id)
+        db.session.delete(client)
+        db.session.commit()
+        return jsonify({"message": f"Client with ID {id} deleted."})
+
 # HealthcareProfessional Resource
 class HealthcareProfessionalResource(Resource):
-    # Read (Single Item)
+    # Read (All Items or Single Item)
     def get(self, id=None):
         if id:
             professional = HealthcareProfessional.query.get_or_404(id)
@@ -19,7 +53,7 @@ class HealthcareProfessionalResource(Resource):
         professionals = HealthcareProfessional.query.all()
         return jsonify([professional.to_dict() for professional in professionals])
 
-    # Create
+    # Create (Single Healthcare Professional)
     def post(self):
         data = request.get_json()
         if not data.get('name'):
@@ -29,7 +63,7 @@ class HealthcareProfessionalResource(Resource):
         db.session.commit()
         return jsonify(new_professional.to_dict()), 201
 
-    # Update
+    # Update (Single Healthcare Professional)
     def put(self, id):
         professional = HealthcareProfessional.query.get_or_404(id)
         data = request.get_json()
@@ -38,7 +72,7 @@ class HealthcareProfessionalResource(Resource):
         db.session.commit()
         return jsonify(professional.to_dict())
 
-    # Delete
+    # Delete (Single Healthcare Professional)
     def delete(self, id):
         professional = HealthcareProfessional.query.get_or_404(id)
         db.session.delete(professional)
@@ -47,12 +81,12 @@ class HealthcareProfessionalResource(Resource):
 
 # Specialization Resource
 class SpecializationResource(Resource):
-    # Read (All Items)
+    # Read (All Specializations)
     def get(self):
         specializations = Specialization.query.all()
         return jsonify([specialization.to_dict() for specialization in specializations])
 
-    # Create
+    # Create (Single Specialization)
     def post(self):
         data = request.get_json()
         if not data.get('name'):
@@ -62,7 +96,7 @@ class SpecializationResource(Resource):
         db.session.commit()
         return jsonify(new_specialization.to_dict()), 201
 
-    # Update
+    # Update (Single Specialization)
     def put(self, id):
         specialization = Specialization.query.get_or_404(id)
         data = request.get_json()
@@ -71,21 +105,21 @@ class SpecializationResource(Resource):
         db.session.commit()
         return jsonify(specialization.to_dict())
 
-    # Delete
+    # Delete (Single Specialization)
     def delete(self, id):
         specialization = Specialization.query.get_or_404(id)
         db.session.delete(specialization)
         db.session.commit()
         return jsonify({"message": f"Specialization with ID {id} deleted."})
 
-# Appointments Resource (Full CRUD)
+# Appointment Resource
 class AppointmentResource(Resource):
-    # Read (All Items)
+    # Read (All Appointments)
     def get(self):
         appointments = Appointment.query.all()
         return jsonify([appointment.to_dict() for appointment in appointments])
 
-    # Create
+    # Create (Single Appointment)
     def post(self):
         data = request.get_json()
         if not data.get('date') or not data.get('time') or not data.get('client_id') or not data.get('healthcare_professional_id'):
@@ -100,7 +134,7 @@ class AppointmentResource(Resource):
         db.session.commit()
         return jsonify(new_appointment.to_dict()), 201
 
-    # Update
+    # Update (Single Appointment)
     def put(self, id):
         appointment = Appointment.query.get_or_404(id)
         data = request.get_json()
@@ -111,7 +145,7 @@ class AppointmentResource(Resource):
         db.session.commit()
         return jsonify(appointment.to_dict())
 
-    # Delete
+    # Delete (Single Appointment)
     def delete(self, id):
         appointment = Appointment.query.get_or_404(id)
         db.session.delete(appointment)
@@ -119,6 +153,7 @@ class AppointmentResource(Resource):
         return jsonify({"message": f"Appointment with ID {id} deleted."})
 
 # Register Resources with the API
-api.add_resource(HealthcareProfessionalResource, '/healthcare_professionals', '/healthcare_professionals/<int:id>')
-api.add_resource(SpecializationResource, '/specializations', '/specializations/<int:id>')
-api.add_resource(AppointmentResource, '/appointments', '/appointments/<int:id>')
+api.add_resource(ClientResource, '/clients', '/clients/<int:id>')  # Client Resource
+api.add_resource(HealthcareProfessionalResource, '/healthcare_professionals', '/healthcare_professionals/<int:id>')  # Healthcare Professional Resource
+api.add_resource(SpecializationResource, '/specializations', '/specializations/<int:id>')  # Specialization Resource
+api.add_resource(AppointmentResource, '/appointments', '/appointments/<int:id>')  # Appointment Resource

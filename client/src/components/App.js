@@ -3,22 +3,22 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import HealthcareProfessionals from './Healthcareprofessionals';
 import Specializations from './Specializations';
 import Appointments from './Appointments';
+import Clients from './Clients';
 import Navbar from './Navbar';
 
-function App() {
+const App = () => {
   return (
     <Router>
       <Navbar />
       <div className="container mt-5">
-        <Routes>
-          <Route path="/" element={<h1>Welcome to MedMatch App</h1>} />
-          <Route path="/healthcare-professionals" element={<HealthcareProfessionals />} />
-          <Route path="/specializations" element={<Specializations />} />
+        <Routes> {/* Replace Switch with Routes */}
+          <Route path="/" element={<HealthcareProfessionals />} /> {/* Use 'element' prop */}
+          <Route path="/clients" element={<Clients />} />
           <Route path="/appointments" element={<Appointments />} />
+          <Route path="/specializations" element={<Specializations />} /> {/* Add Route for Specializations */}
         </Routes>
       </div>
     </Router>
   );
-}
-
+};
 export default App;
