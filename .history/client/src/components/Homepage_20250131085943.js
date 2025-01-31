@@ -6,7 +6,7 @@ const HomePage = () => {
   return (
     <div className="container-fluid">
       {/* Hero Section */}
-      <section className="hero py-5" style={{ backgroundColor: '#ffffff', color: '#005f73' }}>
+      <section className="hero bg-lightblue text-white py-5">
         <div className="container text-center">
           <h1 className="display-3 font-weight-bold">Welcome to MedMatch Hospital Management</h1>
           <p className="lead">Manage hospital staff, track appointments, and organize patient data with ease.</p>

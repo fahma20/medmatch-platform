@@ -7,14 +7,12 @@
 import React, { useState, useEffect } from 'react';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { Button, Collapse, Card } from 'react-bootstrap';
 
 const HealthcareProfessional = () => {
   const [professionals, setProfessionals] = useState([]);
   const [editing, setEditing] = useState(null);
-  const [open, setOpen] = useState({});  // To handle collapsible state for each professional
 
-  // Fetch healthcare professionals with their specializations
+  // Fetch healthcare professionals from the backend
   useEffect(() => {
     const fetchProfessionals = async () => {
       try {
@@ -110,14 +108,6 @@ const HealthcareProfessional = () => {
     setEditing(professional);
   };
 
-  // Toggle collapsible for each professional's specializations
-  const toggleSpecializations = (id) => {
-    setOpen((prevState) => ({
-      ...prevState,
-      [id]: !prevState[id],
-    }));
-  };
-
   return (
     <div className="container mt-5">
       <h2 className="text-center mb-4">{editing ? 'Edit Healthcare Professional' : 'Add Healthcare Professional'}</h2>
@@ -167,52 +157,23 @@ const HealthcareProfessional = () => {
           <p>No healthcare professionals available.</p>
         ) : (
           professionals.map((professional) => (
-            <Card key={professional.id} className="mb-3 shadow-sm">
-              <Card.Body>
-                <div className="d-flex justify-content-between align-items-center">
-                  <h5 className="card-title">{professional.name}</h5>
-                  <div>
-                    <Button
-                      variant="warning"
-                      onClick={() => handleEdit(professional)}
-                      className="mr-2"
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="danger"
-                      onClick={() => handleDelete(professional.id)}
-                    >
-                      Delete
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Specializations */}
-                {professional.specializations && professional.specializations.length > 0 && (
-                  <>
-                    <Button
-                      variant="link"
-                      onClick={() => toggleSpecializations(professional.id)}
-                      aria-expanded={open[professional.id] ? 'true' : 'false'}
-                    >
-                      {open[professional.id] ? 'Hide Specializations' : 'Show Specializations'}
-                    </Button>
-                    <Collapse in={open[professional.id]}>
-                      <div className="mt-3">
-                        <ul className="list-group">
-                          {professional.specializations.map((specialization) => (
-                            <li key={specialization.id} className="list-group-item">
-                              {specialization.name}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </Collapse>
-                  </>
-                )}
-              </Card.Body>
-            </Card>
+            <div key={professional.id} className="card mb-3 shadow-sm">
+              <div className="card-body">
+                <h5 className="card-title">{professional.name}</h5>
+                <button
+                  className="btn btn-warning"
+                  onClick={() => handleEdit(professional)}
+                >
+                  Edit
+                </button>
+                <button
+                  className="btn btn-danger ml-2"
+                  onClick={() => handleDelete(professional.id)}
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
           ))
         )}
       </div>

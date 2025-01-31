@@ -5,9 +5,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import HealthcareProfessionals from './Healthcareprofessionals'; // Ensure the correct name and casing
 import Specializations from './Specializations';
 import Appointments from './Appointments';
-import Clients from './Clients';
+import Clients from './Cl';
 import Navbar from './Navbar';
-import HomePage from './Homepage'; // Corrected import to HomePage
+import HomePage from './HomePage'; // Corrected import to HomePage
 
 const App = () => {
   return (

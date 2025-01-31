@@ -1,7 +1,8 @@
 # routes.py
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify 
 from flask_restful import Api, Resource
-from .models import db, HealthcareProfessional, Specialization, Appointment, Client
+from flask import request, jsonify
+from .models import db, HealthcareProfessional, Specialization, Appointment
 
 
 api_bp = Blueprint('api', __name__)
@@ -118,10 +119,9 @@ class AppointmentResource(Resource):
         db.session.commit()
         return jsonify({"message": f"Appointment with ID {id} deleted."})
 
-# Client Resource (Full CRUD)
-class ClientResource(Resource):
+        class ClientResource(Resource):
     # Read (All Items)
-    def get(self):
+def get(self):
         clients = Client.query.all()
         return jsonify([client.to_dict() for client in clients])
 
@@ -158,4 +158,3 @@ class ClientResource(Resource):
 api.add_resource(HealthcareProfessionalResource, '/healthcare_professionals', '/healthcare_professionals/<int:id>')
 api.add_resource(SpecializationResource, '/specializations', '/specializations/<int:id>')
 api.add_resource(AppointmentResource, '/appointments', '/appointments/<int:id>')
-api.add_resource(ClientResource, '/clients', '/clients/<int:id>')
