@@ -217,40 +217,23 @@ const Appointments = () => {
 
             if (response.ok) {
                 const result = await response.json();
+                // Add the newly created appointment to the appointments list without refreshing
                 setAppointments((prevAppointments) => [...prevAppointments, result]);
                 setMessage('Appointment scheduled successfully!');
                 resetForm();
-            } 
+            } else {
+                setMessage('There was an issue scheduling the appointment.');
             }
-         catch (error) {
+        } catch (error) {
             setMessage('Error connecting to the server.');
         }
     };
 
-    // Reset form fields after submitting
     const resetForm = () => {
         setClientId('');
         setProfessionalId('');
         setAppointmentDate('');
         setAppointmentTime('');
-    };
-
-    // Handle deleting an appointment
-    const handleDelete = async (appointmentId) => {
-        try {
-            const response = await fetch(`http://127.0.0.1:5000/api/appointments/${appointmentId}`, {
-                method: 'DELETE',
-            });
-
-            if (response.ok) {
-                setAppointments((prevAppointments) => prevAppointments.filter(appointment => appointment.id !== appointmentId));
-                setMessage('Appointment deleted successfully!');
-            } else {
-                setMessage('There was an issue deleting the appointment.');
-            }
-        } catch (error) {
-            setMessage('Error connecting to the server.');
-        }
     };
 
     return (
@@ -290,7 +273,7 @@ const Appointments = () => {
                 <div className="form-group mt-3">
                     <label>Appointment Date</label>
                     <input
-                        type="date"
+                        type="datetime-local"
                         className="form-control"
                         value={appointmentDate}
                         onChange={(e) => setAppointmentDate(e.target.value)}
@@ -323,7 +306,6 @@ const Appointments = () => {
                             <th>Healthcare Professional ID</th>
                             <th>Date</th>
                             <th>Time</th>
-                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -333,14 +315,6 @@ const Appointments = () => {
                                 <td>{appointment.healthcare_professional_id}</td>
                                 <td>{appointment.date}</td>
                                 <td>{appointment.time}</td>
-                                <td>
-                                    <button
-                                        className="btn btn-dark"
-                                        onClick={() => handleDelete(appointment.id)}
-                                    >
-                                        Delete
-                                    </button>
-                                </td>
                             </tr>
                         ))}
                     </tbody>

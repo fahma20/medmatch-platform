@@ -222,7 +222,7 @@ const Appointments = () => {
                 resetForm();
             } 
             }
-         catch (error) {
+        } catch (error) {
             setMessage('Error connecting to the server.');
         }
     };

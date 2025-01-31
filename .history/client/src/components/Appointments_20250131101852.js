@@ -220,9 +220,10 @@ const Appointments = () => {
                 setAppointments((prevAppointments) => [...prevAppointments, result]);
                 setMessage('Appointment scheduled successfully!');
                 resetForm();
-            } 
+            } else {
+                setMessage('There was an issue scheduling the appointment.');
             }
-         catch (error) {
+        } catch (error) {
             setMessage('Error connecting to the server.');
         }
     };

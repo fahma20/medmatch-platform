@@ -164,8 +164,7 @@ const Appointments = () => {
     const [clients, setClients] = useState([]);
     const [professionals, setProfessionals] = useState([]);
     const [appointments, setAppointments] = useState([]);
-    const [appointmentDate, setAppointmentDate] = useState('');
-    const [appointmentTime, setAppointmentTime] = useState('');
+    const [appointmentDateTime, setAppointmentDateTime] = useState(''); // single state for datetime
     const [clientId, setClientId] = useState('');
     const [professionalId, setProfessionalId] = useState('');
     const [message, setMessage] = useState('');
@@ -202,8 +201,7 @@ const Appointments = () => {
         const newAppointment = {
             client_id: clientId,
             healthcare_professional_id: professionalId,
-            date: appointmentDate,
-            time: appointmentTime,
+            date_time: appointmentDateTime, // using the combined datetime field
         };
 
         try {
@@ -217,25 +215,25 @@ const Appointments = () => {
 
             if (response.ok) {
                 const result = await response.json();
+                // Add the newly created appointment to the appointments list without refreshing
                 setAppointments((prevAppointments) => [...prevAppointments, result]);
                 setMessage('Appointment scheduled successfully!');
                 resetForm();
-            } 
+            } else {
+                setMessage('There was an issue scheduling the appointment.');
             }
-         catch (error) {
+        } catch (error) {
             setMessage('Error connecting to the server.');
         }
     };
 
-    // Reset form fields after submitting
     const resetForm = () => {
         setClientId('');
         setProfessionalId('');
-        setAppointmentDate('');
-        setAppointmentTime('');
+        setAppointmentDateTime('');
     };
 
-    // Handle deleting an appointment
+    // Handle appointment deletion
     const handleDelete = async (appointmentId) => {
         try {
             const response = await fetch(`http://127.0.0.1:5000/api/appointments/${appointmentId}`, {
@@ -243,14 +241,24 @@ const Appointments = () => {
             });
 
             if (response.ok) {
-                setAppointments((prevAppointments) => prevAppointments.filter(appointment => appointment.id !== appointmentId));
+                setAppointments((prevAppointments) =>
+                    prevAppointments.filter((appointment) => appointment.id !== appointmentId)
+                );
                 setMessage('Appointment deleted successfully!');
             } else {
-                setMessage('There was an issue deleting the appointment.');
+                setMessage('Error deleting the appointment.');
             }
         } catch (error) {
             setMessage('Error connecting to the server.');
         }
+    };
+
+    // Function to split date_time into date and time
+    const splitDateTime = (dateTime) => {
+        const date = new Date(dateTime);
+        const formattedDate = date.toLocaleDateString(); // Format as mm/dd/yyyy
+        const formattedTime = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); // Format as hh:mm
+        return { date: formattedDate, time: formattedTime };
     };
 
     return (
@@ -288,22 +296,12 @@ const Appointments = () => {
                     </select>
                 </div>
                 <div className="form-group mt-3">
-                    <label>Appointment Date</label>
+                    <label>Appointment Date and Time</label>
                     <input
-                        type="date"
+                        type="datetime-local"
                         className="form-control"
-                        value={appointmentDate}
-                        onChange={(e) => setAppointmentDate(e.target.value)}
-                        required
-                    />
-                </div>
-                <div className="form-group mt-3">
-                    <label>Appointment Time</label>
-                    <input
-                        type="time"
-                        className="form-control"
-                        value={appointmentTime}
-                        onChange={(e) => setAppointmentTime(e.target.value)}
+                        value={appointmentDateTime}
+                        onChange={(e) => setAppointmentDateTime(e.target.value)}
                         required
                     />
                 </div>
@@ -321,28 +319,31 @@ const Appointments = () => {
                         <tr>
                             <th>Client ID</th>
                             <th>Healthcare Professional ID</th>
-                            <th>Date</th>
-                            <th>Time</th>
+                            <th>Appointment Date</th>
+                            <th>Appointment Time</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {appointments.map((appointment) => (
-                            <tr key={appointment.id}>
-                                <td>{appointment.client_id}</td>
-                                <td>{appointment.healthcare_professional_id}</td>
-                                <td>{appointment.date}</td>
-                                <td>{appointment.time}</td>
-                                <td>
-                                    <button
-                                        className="btn btn-dark"
-                                        onClick={() => handleDelete(appointment.id)}
-                                    >
-                                        Delete
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
+                        {appointments.map((appointment) => {
+                            const { date, time } = splitDateTime(appointment.date_time); // Split datetime into date and time
+                            return (
+                                <tr key={appointment.id}>
+                                    <td>{appointment.client_id}</td>
+                                    <td>{appointment.healthcare_professional_id}</td>
+                                    <td>{date}</td>
+                                    <td>{time}</td>
+                                    <td>
+                                        <button
+                                            className="btn btn-danger"
+                                            onClick={() => handleDelete(appointment.id)}
+                                        >
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
             </div>

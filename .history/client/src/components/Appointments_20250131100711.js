@@ -165,7 +165,6 @@ const Appointments = () => {
     const [professionals, setProfessionals] = useState([]);
     const [appointments, setAppointments] = useState([]);
     const [appointmentDate, setAppointmentDate] = useState('');
-    const [appointmentTime, setAppointmentTime] = useState('');
     const [clientId, setClientId] = useState('');
     const [professionalId, setProfessionalId] = useState('');
     const [message, setMessage] = useState('');
@@ -203,7 +202,6 @@ const Appointments = () => {
             client_id: clientId,
             healthcare_professional_id: professionalId,
             date: appointmentDate,
-            time: appointmentTime,
         };
 
         try {
@@ -217,25 +215,18 @@ const Appointments = () => {
 
             if (response.ok) {
                 const result = await response.json();
+                // Add the newly created appointment to the appointments list without refreshing
                 setAppointments((prevAppointments) => [...prevAppointments, result]);
                 setMessage('Appointment scheduled successfully!');
                 resetForm();
-            } 
+            } else {
+                setMessage('There was an issue scheduling the appointment.');
             }
-         catch (error) {
+        } catch (error) {
             setMessage('Error connecting to the server.');
         }
     };
 
-    // Reset form fields after submitting
-    const resetForm = () => {
-        setClientId('');
-        setProfessionalId('');
-        setAppointmentDate('');
-        setAppointmentTime('');
-    };
-
-    // Handle deleting an appointment
     const handleDelete = async (appointmentId) => {
         try {
             const response = await fetch(`http://127.0.0.1:5000/api/appointments/${appointmentId}`, {
@@ -243,7 +234,10 @@ const Appointments = () => {
             });
 
             if (response.ok) {
-                setAppointments((prevAppointments) => prevAppointments.filter(appointment => appointment.id !== appointmentId));
+                // Remove the deleted appointment from the appointments list
+                setAppointments((prevAppointments) =>
+                    prevAppointments.filter((appointment) => appointment.id !== appointmentId)
+                );
                 setMessage('Appointment deleted successfully!');
             } else {
                 setMessage('There was an issue deleting the appointment.');
@@ -251,6 +245,12 @@ const Appointments = () => {
         } catch (error) {
             setMessage('Error connecting to the server.');
         }
+    };
+
+    const resetForm = () => {
+        setClientId('');
+        setProfessionalId('');
+        setAppointmentDate('');
     };
 
     return (
@@ -288,22 +288,12 @@ const Appointments = () => {
                     </select>
                 </div>
                 <div className="form-group mt-3">
-                    <label>Appointment Date</label>
+                    <label>Appointment Date & Time</label>
                     <input
-                        type="date"
+                        type="datetime-local"
                         className="form-control"
                         value={appointmentDate}
                         onChange={(e) => setAppointmentDate(e.target.value)}
-                        required
-                    />
-                </div>
-                <div className="form-group mt-3">
-                    <label>Appointment Time</label>
-                    <input
-                        type="time"
-                        className="form-control"
-                        value={appointmentTime}
-                        onChange={(e) => setAppointmentTime(e.target.value)}
                         required
                     />
                 </div>
@@ -321,8 +311,7 @@ const Appointments = () => {
                         <tr>
                             <th>Client ID</th>
                             <th>Healthcare Professional ID</th>
-                            <th>Date</th>
-                            <th>Time</th>
+                            <th>Date & Time</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -331,8 +320,7 @@ const Appointments = () => {
                             <tr key={appointment.id}>
                                 <td>{appointment.client_id}</td>
                                 <td>{appointment.healthcare_professional_id}</td>
-                                <td>{appointment.date}</td>
-                                <td>{appointment.time}</td>
+                                <td>{new Date(appointment.date).toLocaleString()}</td>
                                 <td>
                                     <button
                                         className="btn btn-dark"

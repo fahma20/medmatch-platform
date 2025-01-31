@@ -165,7 +165,6 @@ const Appointments = () => {
     const [professionals, setProfessionals] = useState([]);
     const [appointments, setAppointments] = useState([]);
     const [appointmentDate, setAppointmentDate] = useState('');
-    const [appointmentTime, setAppointmentTime] = useState('');
     const [clientId, setClientId] = useState('');
     const [professionalId, setProfessionalId] = useState('');
     const [message, setMessage] = useState('');
@@ -203,7 +202,6 @@ const Appointments = () => {
             client_id: clientId,
             healthcare_professional_id: professionalId,
             date: appointmentDate,
-            time: appointmentTime,
         };
 
         try {
@@ -220,9 +218,10 @@ const Appointments = () => {
                 setAppointments((prevAppointments) => [...prevAppointments, result]);
                 setMessage('Appointment scheduled successfully!');
                 resetForm();
-            } 
+            } else {
+                setMessage('There was an issue scheduling the appointment.');
             }
-         catch (error) {
+        } catch (error) {
             setMessage('Error connecting to the server.');
         }
     };
@@ -232,7 +231,6 @@ const Appointments = () => {
         setClientId('');
         setProfessionalId('');
         setAppointmentDate('');
-        setAppointmentTime('');
     };
 
     // Handle deleting an appointment
@@ -243,6 +241,7 @@ const Appointments = () => {
             });
 
             if (response.ok) {
+                // Filter out the deleted appointment from the state
                 setAppointments((prevAppointments) => prevAppointments.filter(appointment => appointment.id !== appointmentId));
                 setMessage('Appointment deleted successfully!');
             } else {
@@ -290,20 +289,10 @@ const Appointments = () => {
                 <div className="form-group mt-3">
                     <label>Appointment Date</label>
                     <input
-                        type="date"
+                        type="datetime-local"
                         className="form-control"
                         value={appointmentDate}
                         onChange={(e) => setAppointmentDate(e.target.value)}
-                        required
-                    />
-                </div>
-                <div className="form-group mt-3">
-                    <label>Appointment Time</label>
-                    <input
-                        type="time"
-                        className="form-control"
-                        value={appointmentTime}
-                        onChange={(e) => setAppointmentTime(e.target.value)}
                         required
                     />
                 </div>
@@ -315,7 +304,7 @@ const Appointments = () => {
             {message && <div className="mt-4 alert alert-info">{message}</div>}
 
             <div className="mt-4">
-                <h3 className="text-center">Existing Appointments</h3>
+                <h3 className="text-center">Schedule Appointments</h3>
                 <table className="table table-bordered">
                     <thead>
                         <tr>
