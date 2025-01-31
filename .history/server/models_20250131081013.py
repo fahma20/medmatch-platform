@@ -1,7 +1,7 @@
 # models.py
 # models.py
 
-from flask_sqlalchemy import SQLAlchemy
+rom flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.ext.associationproxy import association_proxy
 
