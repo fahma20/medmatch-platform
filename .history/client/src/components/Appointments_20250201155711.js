@@ -163,7 +163,7 @@ export default Appointments;
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Form, Button, Table } from 'react-bootstrap';
 
-const Appointments = () => {
+const AppointmentScheduler = () => {
   const [appointments, setAppointments] = useState([]);
   const [clients, setClients] = useState([]);
   const [healthcareProfessionals, setHealthcareProfessionals] = useState([]);
@@ -180,6 +180,7 @@ const Appointments = () => {
     fetchHealthcareProfessionals();
   }, []);
 
+  // Fetch appointments from the backend
   const fetchAppointments = async () => {
     try {
       const response = await fetch('http://127.0.0.1:5000/api/appointments');
@@ -190,6 +191,7 @@ const Appointments = () => {
     }
   };
 
+  // Fetch clients from the backend
   const fetchClients = async () => {
     try {
       const response = await fetch('http://127.0.0.1:5000/api/clients');
@@ -200,6 +202,7 @@ const Appointments = () => {
     }
   };
 
+  // Fetch healthcare professionals from the backend
   const fetchHealthcareProfessionals = async () => {
     try {
       const response = await fetch('http://127.0.0.1:5000/api/healthcare_professionals');
@@ -210,16 +213,6 @@ const Appointments = () => {
     }
   };
 
-  // Converts 24-hour time to 12-hour AM/PM format
-  const convertTo12HourFormat = (time) => {
-    const [hours, minutes] = time.split(':');
-    let hoursInt = parseInt(hours, 10);
-    const ampm = hoursInt >= 12 ? 'PM' : 'AM';
-    hoursInt = hoursInt % 12;
-    hoursInt = hoursInt ? hoursInt : 12; // the hour '0' should be '12'
-    return `${hoursInt}:${minutes} ${ampm}`;
-  };
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -227,30 +220,16 @@ const Appointments = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Convert the time to 12-hour format with AM/PM
-    const formattedTime = convertTo12HourFormat(formData.time);
-
-    const newAppointment = {
-      ...formData,
-      time: formattedTime,
-    };
-
     try {
       const response = await fetch('http://127.0.0.1:5000/api/appointments', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newAppointment),
+        body: JSON.stringify(formData),
       });
-
       if (response.ok) {
-        // Add new appointment to the list dynamically
-        const appointment = await response.json();
-        setAppointments((prevAppointments) => [...prevAppointments, appointment]);
-
-        // Reset form after submitting
+        fetchAppointments(); // Refresh appointments list
         setFormData({ client_id: '', healthcare_professional_id: '', date: '', time: '' });
       } else {
         console.error('Error creating appointment');
@@ -265,9 +244,8 @@ const Appointments = () => {
       const response = await fetch(`http://127.0.0.1:5000/api/appointments/${id}`, {
         method: 'DELETE',
       });
-
       if (response.ok) {
-        setAppointments(appointments.filter((appointment) => appointment.id !== id));
+        fetchAppointments(); // Refresh appointments list
       } else {
         console.error('Error deleting appointment');
       }
@@ -349,7 +327,7 @@ const Appointments = () => {
           </Col>
         </Row>
 
-        <Button variant="dark" type="submit">Schedule Appointment</Button>
+        <Button variant="primary" type="submit">Schedule Appointment</Button>
       </Form>
 
       <h2 className="mt-5">Existing Appointments</h2>
@@ -374,7 +352,7 @@ const Appointments = () => {
               <td>{appointment.time}</td>
               <td>
                 <Button
-                  variant="dark"
+                  variant="danger"
                   onClick={() => handleDelete(appointment.id)}
                 >
                   Delete
@@ -388,4 +366,4 @@ const Appointments = () => {
   );
 };
 
-export default Appointments;
+export default AppointmentScheduler;

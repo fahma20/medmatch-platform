@@ -349,7 +349,7 @@ const Appointments = () => {
           </Col>
         </Row>
 
-        <Button variant="dark" type="submit">Schedule Appointment</Button>
+        <Button variant="primary" type="submit">Schedule Appointment</Button>
       </Form>
 
       <h2 className="mt-5">Existing Appointments</h2>
@@ -374,7 +374,7 @@ const Appointments = () => {
               <td>{appointment.time}</td>
               <td>
                 <Button
-                  variant="dark"
+                  variant="danger"
                   onClick={() => handleDelete(appointment.id)}
                 >
                   Delete

@@ -349,7 +349,7 @@ const Appointments = () => {
           </Col>
         </Row>
 
-        <Button variant="dark" type="submit">Schedule Appointment</Button>
+        <Button variant="1b263b" type="submit">Schedule Appointment</Button>
       </Form>
 
       <h2 className="mt-5">Existing Appointments</h2>

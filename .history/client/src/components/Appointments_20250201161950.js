@@ -246,11 +246,8 @@ const Appointments = () => {
       });
 
       if (response.ok) {
-        // Add new appointment to the list dynamically
-        const appointment = await response.json();
-        setAppointments((prevAppointments) => [...prevAppointments, appointment]);
-
-        // Reset form after submitting
+        // Re-fetch the list of appointments
+        fetchAppointments();
         setFormData({ client_id: '', healthcare_professional_id: '', date: '', time: '' });
       } else {
         console.error('Error creating appointment');
@@ -267,7 +264,7 @@ const Appointments = () => {
       });
 
       if (response.ok) {
-        setAppointments(appointments.filter((appointment) => appointment.id !== id));
+        fetchAppointments();
       } else {
         console.error('Error deleting appointment');
       }
@@ -349,7 +346,7 @@ const Appointments = () => {
           </Col>
         </Row>
 
-        <Button variant="dark" type="submit">Schedule Appointment</Button>
+        <Button variant="primary" type="submit">Schedule Appointment</Button>
       </Form>
 
       <h2 className="mt-5">Existing Appointments</h2>
@@ -374,7 +371,7 @@ const Appointments = () => {
               <td>{appointment.time}</td>
               <td>
                 <Button
-                  variant="dark"
+                  variant="danger"
                   onClick={() => handleDelete(appointment.id)}
                 >
                   Delete

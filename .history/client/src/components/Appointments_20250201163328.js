@@ -162,6 +162,7 @@ export default Appointments;
 
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Form, Button, Table } from 'react-bootstrap';
+import './Appointm';  // Import the custom CSS file
 
 const Appointments = () => {
   const [appointments, setAppointments] = useState([]);
@@ -210,7 +211,6 @@ const Appointments = () => {
     }
   };
 
-  // Converts 24-hour time to 12-hour AM/PM format
   const convertTo12HourFormat = (time) => {
     const [hours, minutes] = time.split(':');
     let hoursInt = parseInt(hours, 10);
@@ -228,13 +228,8 @@ const Appointments = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Convert the time to 12-hour format with AM/PM
     const formattedTime = convertTo12HourFormat(formData.time);
-
-    const newAppointment = {
-      ...formData,
-      time: formattedTime,
-    };
+    const newAppointment = { ...formData, time: formattedTime };
 
     try {
       const response = await fetch('http://127.0.0.1:5000/api/appointments', {
@@ -246,11 +241,8 @@ const Appointments = () => {
       });
 
       if (response.ok) {
-        // Add new appointment to the list dynamically
         const appointment = await response.json();
         setAppointments((prevAppointments) => [...prevAppointments, appointment]);
-
-        // Reset form after submitting
         setFormData({ client_id: '', healthcare_professional_id: '', date: '', time: '' });
       } else {
         console.error('Error creating appointment');
@@ -277,8 +269,8 @@ const Appointments = () => {
   };
 
   return (
-    <Container>
-      <h2 className="mt-4">Schedule an Appointment</h2>
+    <Container className="appointment-container">
+      <h2>Schedule an Appointment</h2>
 
       <Form onSubmit={handleSubmit}>
         <Row>
@@ -349,11 +341,13 @@ const Appointments = () => {
           </Col>
         </Row>
 
-        <Button variant="dark" type="submit">Schedule Appointment</Button>
+        <Button type="submit" variant="dark">
+          Schedule Appointment
+        </Button>
       </Form>
 
-      <h2 className="mt-5">Existing Appointments</h2>
-      <Table striped bordered hover>
+      <h2>Existing Appointments</h2>
+      <Table striped bordered hover responsive>
         <thead>
           <tr>
             <th>ID</th>
@@ -374,7 +368,8 @@ const Appointments = () => {
               <td>{appointment.time}</td>
               <td>
                 <Button
-                  variant="dark"
+                  variant="danger"
+                  className="delete-btn"
                   onClick={() => handleDelete(appointment.id)}
                 >
                   Delete
