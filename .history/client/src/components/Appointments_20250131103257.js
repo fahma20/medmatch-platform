@@ -231,7 +231,7 @@ const Appointments = () => {
       setClientId('');
       setProfessionalId('');
       setAppointmentDate('');
-
+      setAppointmentTime('');
   };
 
   return (
@@ -283,6 +283,8 @@ const Appointments = () => {
                   <input
                       type="time"
                       className="form-control"
+                      value={appointmentTime}
+                      onChange={(e) => setAppointmentTime(e.target.value)}
                       required
                   />
               </div>

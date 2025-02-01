@@ -158,13 +158,12 @@ const Appointments = () => {
 
 export default Appointments;
 */
-import React, { useState, useEffect } from 'react';
-
 const Appointments = () => {
   const [clients, setClients] = useState([]);
   const [professionals, setProfessionals] = useState([]);
   const [appointments, setAppointments] = useState([]);
   const [appointmentDate, setAppointmentDate] = useState('');
+  const [appointmentTime, setAppointmentTime] = useState('');
   const [clientId, setClientId] = useState('');
   const [professionalId, setProfessionalId] = useState('');
   const [message, setMessage] = useState('');
@@ -202,6 +201,7 @@ const Appointments = () => {
           client_id: clientId,
           healthcare_professional_id: professionalId,
           date: appointmentDate,
+          time: appointmentTime,
       };
 
       try {
@@ -231,7 +231,7 @@ const Appointments = () => {
       setClientId('');
       setProfessionalId('');
       setAppointmentDate('');
-
+      setAppointmentTime('');
   };
 
   return (
@@ -283,6 +283,8 @@ const Appointments = () => {
                   <input
                       type="time"
                       className="form-control"
+                      value={appointmentTime}
+                      onChange={(e) => setAppointmentTime(e.target.value)}
                       required
                   />
               </div>
@@ -322,3 +324,4 @@ const Appointments = () => {
 
 export default Appointments;
 
+JUST ADD DELETE BUTTON TO THIS ONE. AND REMOVE ONE APPONITMENT TIME
