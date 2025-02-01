@@ -158,8 +158,6 @@ const Appointments = () => {
 
 export default Appointments;
 */
-
-
 import React, { useState, useEffect } from 'react';
 
 const Appointments = () => {
@@ -171,7 +169,7 @@ const Appointments = () => {
   const [professionalId, setProfessionalId] = useState('');
   const [message, setMessage] = useState('');
 
-  // Fetch clients, professionals, and appointments
+  // Fetch clients and healthcare professionals
   useEffect(() => {
     const fetchClients = async () => {
       const response = await fetch('http://127.0.0.1:5000/api/clients');
@@ -203,7 +201,8 @@ const Appointments = () => {
     const newAppointment = {
       client_id: clientId,
       healthcare_professional_id: professionalId,
-      date: appointmentDate,
+      date: appointmentDate, // Ensure the date includes both date and time
+      time: appointmentDate.split("T")[1], // Extract time part if necessary
     };
 
     try {
@@ -217,6 +216,7 @@ const Appointments = () => {
 
       if (response.ok) {
         const result = await response.json();
+        // Add the newly created appointment to the appointments list without refreshing
         setAppointments((prevAppointments) => [...prevAppointments, result]);
         setMessage('Appointment scheduled successfully!');
         resetForm();
@@ -228,29 +228,10 @@ const Appointments = () => {
     }
   };
 
-  // Reset form after submitting
   const resetForm = () => {
     setClientId('');
     setProfessionalId('');
     setAppointmentDate('');
-  };
-
-  // Delete appointment
-  const handleDelete = async (id) => {
-    try {
-      const response = await fetch(`http://127.0.0.1:5000/api/appointments/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        setAppointments(appointments.filter((appointment) => appointment.id !== id));
-        setMessage('Appointment deleted successfully!');
-      } else {
-        setMessage('There was an issue deleting the appointment.');
-      }
-    } catch (error) {
-      setMessage('Error connecting to the server.');
-    }
   };
 
   return (
@@ -315,31 +296,17 @@ const Appointments = () => {
               <th>Healthcare Professional ID</th>
               <th>Date</th>
               <th>Time</th>
-              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {appointments.map((appointment) => {
-              const date = appointment.date.split('T')[0];
-              const time = appointment.date.split('T')[1];
-
-              return (
-                <tr key={appointment.id}>
-                  <td>{appointment.client_id}</td>
-                  <td>{appointment.healthcare_professional_id}</td>
-                  <td>{date}</td>
-                  <td>{time}</td>
-                  <td>
-                    <button
-                      className="btn btn-danger"
-                      onClick={() => handleDelete(appointment.id)}
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
+            {appointments.map((appointment) => (
+              <tr key={appointment.id}>
+                <td>{appointment.client_id}</td>
+                <td>{appointment.healthcare_professional_id}</td>
+                <td>{appointment.date}</td>
+                <td>{appointment.time}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

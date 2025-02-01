@@ -158,8 +158,6 @@ const Appointments = () => {
 
 export default Appointments;
 */
-
-
 import React, { useState, useEffect } from 'react';
 
 const Appointments = () => {
@@ -171,7 +169,7 @@ const Appointments = () => {
   const [professionalId, setProfessionalId] = useState('');
   const [message, setMessage] = useState('');
 
-  // Fetch clients, professionals, and appointments
+  // Fetch clients and healthcare professionals
   useEffect(() => {
     const fetchClients = async () => {
       const response = await fetch('http://127.0.0.1:5000/api/clients');
@@ -203,7 +201,7 @@ const Appointments = () => {
     const newAppointment = {
       client_id: clientId,
       healthcare_professional_id: professionalId,
-      date: appointmentDate,
+      date: appointmentDate, // This includes both date and time
     };
 
     try {
@@ -217,7 +215,7 @@ const Appointments = () => {
 
       if (response.ok) {
         const result = await response.json();
-        setAppointments((prevAppointments) => [...prevAppointments, result]);
+        setAppointments((prevAppointments) => [...prevAppointments, result]); // Update without refreshing
         setMessage('Appointment scheduled successfully!');
         resetForm();
       } else {
@@ -228,22 +226,17 @@ const Appointments = () => {
     }
   };
 
-  // Reset form after submitting
-  const resetForm = () => {
-    setClientId('');
-    setProfessionalId('');
-    setAppointmentDate('');
-  };
-
-  // Delete appointment
-  const handleDelete = async (id) => {
+  // Handle appointment deletion
+  const handleDelete = async (appointmentId) => {
     try {
-      const response = await fetch(`http://127.0.0.1:5000/api/appointments/${id}`, {
+      const response = await fetch(`http://127.0.0.1:5000/api/appointments/${appointmentId}`, {
         method: 'DELETE',
       });
 
       if (response.ok) {
-        setAppointments(appointments.filter((appointment) => appointment.id !== id));
+        setAppointments((prevAppointments) =>
+          prevAppointments.filter((appointment) => appointment.id !== appointmentId)
+        );
         setMessage('Appointment deleted successfully!');
       } else {
         setMessage('There was an issue deleting the appointment.');
@@ -251,6 +244,25 @@ const Appointments = () => {
     } catch (error) {
       setMessage('Error connecting to the server.');
     }
+  };
+
+  // Reset form fields
+  const resetForm = () => {
+    setClientId('');
+    setProfessionalId('');
+    setAppointmentDate('');
+  };
+
+  // Function to format date and time into desired format (mm/dd/yyyy and time AM/PM)
+  const formatDateAndTime = (dateTime) => {
+    const date = new Date(dateTime);
+    const formattedDate = date.toLocaleDateString('en-US'); // MM/DD/YYYY
+    const formattedTime = date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true, // AM/PM format
+    });
+    return { date: formattedDate, time: formattedTime };
   };
 
   return (
@@ -263,7 +275,6 @@ const Appointments = () => {
             className="form-control"
             value={clientId}
             onChange={(e) => setClientId(e.target.value)}
-            required
           >
             <option value="">Select Client</option>
             {clients.map((client) => (
@@ -279,7 +290,6 @@ const Appointments = () => {
             className="form-control"
             value={professionalId}
             onChange={(e) => setProfessionalId(e.target.value)}
-            required
           >
             <option value="">Select Healthcare Professional</option>
             {professionals.map((professional) => (
@@ -290,7 +300,7 @@ const Appointments = () => {
           </select>
         </div>
         <div className="form-group mt-3">
-          <label>Appointment Date & Time</label>
+          <label>Appointment Date and Time</label>
           <input
             type="datetime-local"
             className="form-control"
@@ -315,14 +325,12 @@ const Appointments = () => {
               <th>Healthcare Professional ID</th>
               <th>Date</th>
               <th>Time</th>
-              <th>Actions</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
             {appointments.map((appointment) => {
-              const date = appointment.date.split('T')[0];
-              const time = appointment.date.split('T')[1];
-
+              const { date, time } = formatDateAndTime(appointment.date);
               return (
                 <tr key={appointment.id}>
                   <td>{appointment.client_id}</td>

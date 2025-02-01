@@ -159,7 +159,6 @@ const Appointments = () => {
 export default Appointments;
 */
 
-
 import React, { useState, useEffect } from 'react';
 
 const Appointments = () => {

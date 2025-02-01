@@ -158,8 +158,6 @@ const Appointments = () => {
 
 export default Appointments;
 */
-
-
 import React, { useState, useEffect } from 'react';
 
 const Appointments = () => {
@@ -171,7 +169,7 @@ const Appointments = () => {
   const [professionalId, setProfessionalId] = useState('');
   const [message, setMessage] = useState('');
 
-  // Fetch clients, professionals, and appointments
+  // Fetch clients and healthcare professionals
   useEffect(() => {
     const fetchClients = async () => {
       const response = await fetch('http://127.0.0.1:5000/api/clients');
@@ -217,6 +215,7 @@ const Appointments = () => {
 
       if (response.ok) {
         const result = await response.json();
+        // Add the newly created appointment to the appointments list without refreshing
         setAppointments((prevAppointments) => [...prevAppointments, result]);
         setMessage('Appointment scheduled successfully!');
         resetForm();
@@ -228,22 +227,17 @@ const Appointments = () => {
     }
   };
 
-  // Reset form after submitting
-  const resetForm = () => {
-    setClientId('');
-    setProfessionalId('');
-    setAppointmentDate('');
-  };
-
-  // Delete appointment
-  const handleDelete = async (id) => {
+  // Handle deleting an appointment
+  const handleDelete = async (appointmentId) => {
     try {
-      const response = await fetch(`http://127.0.0.1:5000/api/appointments/${id}`, {
+      const response = await fetch(`http://127.0.0.1:5000/api/appointments/${appointmentId}`, {
         method: 'DELETE',
       });
 
       if (response.ok) {
-        setAppointments(appointments.filter((appointment) => appointment.id !== id));
+        setAppointments((prevAppointments) =>
+          prevAppointments.filter((appointment) => appointment.id !== appointmentId)
+        );
         setMessage('Appointment deleted successfully!');
       } else {
         setMessage('There was an issue deleting the appointment.');
@@ -251,6 +245,12 @@ const Appointments = () => {
     } catch (error) {
       setMessage('Error connecting to the server.');
     }
+  };
+
+  const resetForm = () => {
+    setClientId('');
+    setProfessionalId('');
+    setAppointmentDate('');
   };
 
   return (
@@ -263,7 +263,6 @@ const Appointments = () => {
             className="form-control"
             value={clientId}
             onChange={(e) => setClientId(e.target.value)}
-            required
           >
             <option value="">Select Client</option>
             {clients.map((client) => (
@@ -279,7 +278,6 @@ const Appointments = () => {
             className="form-control"
             value={professionalId}
             onChange={(e) => setProfessionalId(e.target.value)}
-            required
           >
             <option value="">Select Healthcare Professional</option>
             {professionals.map((professional) => (
@@ -315,31 +313,26 @@ const Appointments = () => {
               <th>Healthcare Professional ID</th>
               <th>Date</th>
               <th>Time</th>
-              <th>Actions</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
-            {appointments.map((appointment) => {
-              const date = appointment.date.split('T')[0];
-              const time = appointment.date.split('T')[1];
-
-              return (
-                <tr key={appointment.id}>
-                  <td>{appointment.client_id}</td>
-                  <td>{appointment.healthcare_professional_id}</td>
-                  <td>{date}</td>
-                  <td>{time}</td>
-                  <td>
-                    <button
-                      className="btn btn-danger"
-                      onClick={() => handleDelete(appointment.id)}
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
+            {appointments.map((appointment) => (
+              <tr key={appointment.id}>
+                <td>{appointment.client_id}</td>
+                <td>{appointment.healthcare_professional_id}</td>
+                <td>{appointment.date}</td>
+                <td>{appointment.time}</td>
+                <td>
+                  <button
+                    className="btn btn-danger"
+                    onClick={() => handleDelete(appointment.id)}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

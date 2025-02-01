@@ -158,8 +158,6 @@ const Appointments = () => {
 
 export default Appointments;
 */
-
-
 import React, { useState, useEffect } from 'react';
 
 const Appointments = () => {
@@ -171,7 +169,7 @@ const Appointments = () => {
   const [professionalId, setProfessionalId] = useState('');
   const [message, setMessage] = useState('');
 
-  // Fetch clients, professionals, and appointments
+  // Fetch clients and healthcare professionals
   useEffect(() => {
     const fetchClients = async () => {
       const response = await fetch('http://127.0.0.1:5000/api/clients');
@@ -203,8 +201,10 @@ const Appointments = () => {
     const newAppointment = {
       client_id: clientId,
       healthcare_professional_id: professionalId,
-      date: appointmentDate,
+      date: appointmentDate, // This should include both date and time
     };
+
+    console.log("Appointment Date & Time being sent:", newAppointment.date); // Debugging log
 
     try {
       const response = await fetch('http://127.0.0.1:5000/api/appointments', {
@@ -228,29 +228,22 @@ const Appointments = () => {
     }
   };
 
-  // Reset form after submitting
   const resetForm = () => {
     setClientId('');
     setProfessionalId('');
     setAppointmentDate('');
   };
 
-  // Delete appointment
-  const handleDelete = async (id) => {
-    try {
-      const response = await fetch(`http://127.0.0.1:5000/api/appointments/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        setAppointments(appointments.filter((appointment) => appointment.id !== id));
-        setMessage('Appointment deleted successfully!');
-      } else {
-        setMessage('There was an issue deleting the appointment.');
-      }
-    } catch (error) {
-      setMessage('Error connecting to the server.');
-    }
+  // Function to format date and time into the desired format
+  const formatDateAndTime = (dateTime) => {
+    const date = new Date(dateTime);
+    const formattedDate = date.toLocaleDateString('en-US'); // MM/DD/YYYY
+    const formattedTime = date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true, // AM/PM format
+    });
+    return { date: formattedDate, time: formattedTime };
   };
 
   return (
@@ -263,7 +256,6 @@ const Appointments = () => {
             className="form-control"
             value={clientId}
             onChange={(e) => setClientId(e.target.value)}
-            required
           >
             <option value="">Select Client</option>
             {clients.map((client) => (
@@ -279,7 +271,6 @@ const Appointments = () => {
             className="form-control"
             value={professionalId}
             onChange={(e) => setProfessionalId(e.target.value)}
-            required
           >
             <option value="">Select Healthcare Professional</option>
             {professionals.map((professional) => (
@@ -290,7 +281,7 @@ const Appointments = () => {
           </select>
         </div>
         <div className="form-group mt-3">
-          <label>Appointment Date & Time</label>
+          <label>Appointment Date and Time</label>
           <input
             type="datetime-local"
             className="form-control"
@@ -315,28 +306,17 @@ const Appointments = () => {
               <th>Healthcare Professional ID</th>
               <th>Date</th>
               <th>Time</th>
-              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {appointments.map((appointment) => {
-              const date = appointment.date.split('T')[0];
-              const time = appointment.date.split('T')[1];
-
+              const { date, time } = formatDateAndTime(appointment.date);
               return (
                 <tr key={appointment.id}>
                   <td>{appointment.client_id}</td>
                   <td>{appointment.healthcare_professional_id}</td>
                   <td>{date}</td>
                   <td>{time}</td>
-                  <td>
-                    <button
-                      className="btn btn-danger"
-                      onClick={() => handleDelete(appointment.id)}
-                    >
-                      Delete
-                    </button>
-                  </td>
                 </tr>
               );
             })}
