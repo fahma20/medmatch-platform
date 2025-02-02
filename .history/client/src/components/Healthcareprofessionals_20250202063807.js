@@ -5,7 +5,7 @@
 // HealthcareProfessionals.js
 // HealthcareProfessionals.js
 import React, { useState, useEffect } from 'react';
-import Switch from 'react-switch';
+import Switch from 'react-switch'; // Import react-switch here
 import { Button, Form, Card, ListGroup, Collapse, Spinner, Alert } from 'react-bootstrap';
 
 const HealthcareProfessional = () => {
@@ -17,6 +17,7 @@ const HealthcareProfessional = () => {
   const [open, setOpen] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [doctorStatus, setDoctorStatus] = useState(false); // State for doctor's status
 
   useEffect(() => {
     fetchHealthcareProfessionals();
@@ -47,7 +48,7 @@ const HealthcareProfessional = () => {
 
   const handleAddProfessional = async (e) => {
     e.preventDefault();
-    const newProfessional = { name: newProfessionalName, specializations: selectedSpecializations, status: 'Active' }; // New professionals will be active by default
+    const newProfessional = { name: newProfessionalName, specializations: selectedSpecializations };
     try {
       const response = await fetch('http://127.0.0.1:5000/api/healthcare_professionals', {
         method: 'POST',
@@ -66,9 +67,9 @@ const HealthcareProfessional = () => {
     }
   };
 
-  const handleToggleStatus = async (id, currentStatus) => {
-    const updatedStatus = currentStatus === 'Active' ? 'Inactive' : 'Active'; // Toggle status
+  const handleToggleStatus = async (id) => {
     try {
+      const updatedStatus = doctorStatus ? 'Inactive' : 'Active';
       const response = await fetch(`http://127.0.0.1:5000/api/healthcare_professionals/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -82,35 +83,10 @@ const HealthcareProfessional = () => {
             professional.id === id ? updatedProfessional : professional
           )
         );
+        setDoctorStatus(!doctorStatus); // Toggle the doctor's status locally
       }
     } catch (error) {
       console.error('Error toggling doctor status', error);
-    }
-  };
-
-  const handleDeleteSpecialization = async (doctorId, specializationId) => {
-    try {
-      const response = await fetch(`http://127.0.0.1:5000/api/professional_specializations/${specializationId}`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        // Update the list of specializations for the doctor
-        setProfessionals((prevProfessionals) =>
-          prevProfessionals.map((professional) =>
-            professional.id === doctorId
-              ? {
-                  ...professional,
-                  specializations: professional.specializations.filter(
-                    (specialization) => specialization.id !== specializationId
-                  ),
-                }
-              : professional
-          )
-        );
-      }
-    } catch (error) {
-      console.error('Error deleting specialization', error);
     }
   };
 
@@ -137,7 +113,7 @@ const HealthcareProfessional = () => {
     <div className="container mt-5">
       <h2 className="mb-4 text-center">{editingProfessional ? 'Edit Healthcare Professional' : 'Add Healthcare Professional'}</h2>
 
-      <Form onSubmit={handleAddProfessional}>
+      <Form onSubmit={editingProfessional ? handleAddProfessional : handleAddProfessional}>
         <Form.Group>
           <Form.Label>Healthcare Professional Name</Form.Label>
           <Form.Control
@@ -203,8 +179,8 @@ const HealthcareProfessional = () => {
                 <div className="d-flex align-items-center">
                   <label className="mr-2">Status: </label>
                   <Switch
-                    checked={professional.status === 'Active'}
-                    onChange={() => handleToggleStatus(professional.id, professional.status)}
+                    checked={doctorStatus}
+                    onChange={() => handleToggleStatus(professional.id)}
                     offColor="#d9534f"
                     onColor="#5bc0de"
                     checkedIcon={false}
@@ -227,10 +203,6 @@ const HealthcareProfessional = () => {
                           <span className={`badge ml-2 ${specialization.status === 'Active' ? 'badge-success' : 'badge-secondary'}`}>
                             {specialization.status}
                           </span>
-                          {/* Button to delete specialization */}
-                          <Button variant="danger" size="sm" onClick={() => handleDeleteSpecialization(professional.id, specialization.id)} className="ml-2">
-                            Delete
-                          </Button>
                         </ListGroup.Item>
                       ))
                     ) : (

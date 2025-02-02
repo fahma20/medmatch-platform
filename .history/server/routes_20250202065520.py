@@ -52,30 +52,7 @@ class SpecializationResource(Resource):
         return jsonify([specialization.to_dict() for specialization in specializations])
 
     # Create
-    def post(self):
-        data = request.get_json()
-        if not data.get('name'):
-            return jsonify({"error": "Name is required"}), 400
-
-        # Create a new healthcare professional
-        new_professional = HealthcareProfessional(name=data['name'])
-        db.session.add(new_professional)
-        db.session.commit()
-
-        # Associate specializations if provided
-        specialization_ids = data.get('specializations', [])
-        if specialization_ids:
-            for spec_id in specialization_ids:
-                specialization = Specialization.query.get(spec_id)
-                if specialization:
-                    professional_specialization = ProfessionalSpecialization(
-                        healthcare_professional_id=new_professional.id,
-                        specialization_id=specialization.id
-                    )
-                    db.session.add(professional_specialization)
-            db.session.commit()  # Commit after adding all associations
-
-        return jsonify(new_professional.to_dict()), 201
+    
     # Update
     def put(self, id):
         specialization = Specialization.query.get_or_404(id)

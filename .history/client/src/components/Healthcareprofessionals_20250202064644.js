@@ -47,7 +47,7 @@ const HealthcareProfessional = () => {
 
   const handleAddProfessional = async (e) => {
     e.preventDefault();
-    const newProfessional = { name: newProfessionalName, specializations: selectedSpecializations, status: 'Active' }; // New professionals will be active by default
+    const newProfessional = { name: newProfessionalName, specializations: selectedSpecializations };
     try {
       const response = await fetch('http://127.0.0.1:5000/api/healthcare_professionals', {
         method: 'POST',
@@ -66,8 +66,8 @@ const HealthcareProfessional = () => {
     }
   };
 
-  const handleToggleStatus = async (id, currentStatus) => {
-    const updatedStatus = currentStatus === 'Active' ? 'Inactive' : 'Active'; // Toggle status
+  const handleToggleStatus = async (id, status) => {
+    const updatedStatus = status === 'Active' ? 'Inactive' : 'Active';
     try {
       const response = await fetch(`http://127.0.0.1:5000/api/healthcare_professionals/${id}`, {
         method: 'PUT',
@@ -137,7 +137,7 @@ const HealthcareProfessional = () => {
     <div className="container mt-5">
       <h2 className="mb-4 text-center">{editingProfessional ? 'Edit Healthcare Professional' : 'Add Healthcare Professional'}</h2>
 
-      <Form onSubmit={handleAddProfessional}>
+      <Form onSubmit={editingProfessional ? handleAddProfessional : handleAddProfessional}>
         <Form.Group>
           <Form.Label>Healthcare Professional Name</Form.Label>
           <Form.Control

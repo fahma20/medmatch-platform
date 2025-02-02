@@ -137,7 +137,7 @@ const HealthcareProfessional = () => {
     <div className="container mt-5">
       <h2 className="mb-4 text-center">{editingProfessional ? 'Edit Healthcare Professional' : 'Add Healthcare Professional'}</h2>
 
-      <Form onSubmit={handleAddProfessional}>
+      <Form onSubmit={editingProfessional ? handleAddProfessional : handleAddProfessional}>
         <Form.Group>
           <Form.Label>Healthcare Professional Name</Form.Label>
           <Form.Control

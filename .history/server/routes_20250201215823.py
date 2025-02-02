@@ -53,29 +53,23 @@ class SpecializationResource(Resource):
 
     # Create
     def post(self):
-        data = request.get_json()
+        data = request.get_json()  # Parse the incoming JSON
         if not data.get('name'):
-            return jsonify({"error": "Name is required"}), 400
+            return jsonify({"error": "Name is required"}), 400  # Check if 'name' is provided
+        
+        # Check for existing specialization with the same name (optional)
+        existing_specialization = Specialization.query.filter_by(name=data['name']).first()
+        if existing_specialization:
+            return jsonify({"error": "Specialization with this name already exists."}), 400
+        
+        try:
+            new_specialization = Specialization(name=data['name'])  # Create a new specialization
+            db.session.add(new_specialization)  # Add it to the session
+            db.session.commit()  # Commit to save it to the database
+            return jsonify(new_specialization.to_dict()), 201  # Return the created specialization
+        except Exception as e:
+            return jsonify({"error": f"An error occurred while creating the specialization: {str(e)}"}), 500
 
-        # Create a new healthcare professional
-        new_professional = HealthcareProfessional(name=data['name'])
-        db.session.add(new_professional)
-        db.session.commit()
-
-        # Associate specializations if provided
-        specialization_ids = data.get('specializations', [])
-        if specialization_ids:
-            for spec_id in specialization_ids:
-                specialization = Specialization.query.get(spec_id)
-                if specialization:
-                    professional_specialization = ProfessionalSpecialization(
-                        healthcare_professional_id=new_professional.id,
-                        specialization_id=specialization.id
-                    )
-                    db.session.add(professional_specialization)
-            db.session.commit()  # Commit after adding all associations
-
-        return jsonify(new_professional.to_dict()), 201
     # Update
     def put(self, id):
         specialization = Specialization.query.get_or_404(id)
