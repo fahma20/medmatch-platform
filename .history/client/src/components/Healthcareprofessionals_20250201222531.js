@@ -5,14 +5,11 @@
 // HealthcareProfessionals.js
 // HealthcareProfessionals.js
 import React, { useState, useEffect } from 'react';
-import { Button, Form, Card, ListGroup, Collapse, Spinner, Alert, ToggleButtonGroup, ToggleButton, FormCheck } from 'react-bootstrap';
-import { Switch } from 'react-bootstrap';
+import { Button, Form, Card, ListGroup, Collapse, Spinner, Alert } from 'react-bootstrap';
 
 const HealthcareProfessional = () => {
   const [professionals, setProfessionals] = useState([]);
   const [newProfessionalName, setNewProfessionalName] = useState('');
-  const [newSpecializationName, setNewSpecializationName] = useState('');
-  const [newSpecializationStatus, setNewSpecializationStatus] = useState('Active');
   const [editingProfessional, setEditingProfessional] = useState(null);
   const [open, setOpen] = useState({}); // For toggling the specialization list visibility
   const [loading, setLoading] = useState(true);
@@ -101,64 +98,6 @@ const HealthcareProfessional = () => {
     }));
   };
 
-  const handleAddSpecialization = async (professionalId) => {
-    const newSpec = {
-      healthcare_professional_id: professionalId,
-      specialization_name: newSpecializationName,
-      status: newSpecializationStatus,
-    };
-
-    try {
-      const response = await fetch('http://127.0.0.1:5000/api/professional_specializations', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newSpec),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        const updatedProfessionals = professionals.map((professional) => {
-          if (professional.id === professionalId) {
-            return {
-              ...professional,
-              specializations: [...professional.specializations, data],
-            };
-          }
-          return professional;
-        });
-        setProfessionals(updatedProfessionals);
-        setNewSpecializationName('');
-        setNewSpecializationStatus('Active');
-      }
-    } catch (error) {
-      console.error('Error adding specialization', error);
-    }
-  };
-
-  const handleStatusChange = (value) => {
-    setNewSpecializationStatus(value);
-  };
-
-  const handleStatusToggle = (professionalId, specializationId) => {
-    setProfessionals(professionals.map(professional => {
-      if (professional.id === professionalId) {
-        return {
-          ...professional,
-          specializations: professional.specializations.map(specialization => {
-            if (specialization.id === specializationId) {
-              return {
-                ...specialization,
-                status: specialization.status === 'Active' ? 'Inactive' : 'Active'
-              };
-            }
-            return specialization;
-          })
-        };
-      }
-      return professional;
-    }));
-  };
-
   if (loading) {
     return (
       <div className="container mt-5 text-center">
@@ -234,16 +173,7 @@ const HealthcareProfessional = () => {
                     {professional.specializations && professional.specializations.length > 0 ? (
                       professional.specializations.map((specialization) => (
                         <ListGroup.Item key={specialization.id}>
-                          <div className="d-flex justify-content-between align-items-center">
-                            <span>{specialization.specialization_name} - {specialization.status}</span>
-                            <FormCheck
-                              type="switch"
-                              id={`status-switch-${specialization.id}`}
-                              label={specialization.status === 'Active' ? 'Active' : 'Inactive'}
-                              checked={specialization.status === 'Active'}
-                              onChange={() => handleStatusToggle(professional.id, specialization.id)}
-                            />
-                          </div>
+                          {specialization.specialization_name} - {specialization.status}
                         </ListGroup.Item>
                       ))
                     ) : (
@@ -251,42 +181,6 @@ const HealthcareProfessional = () => {
                     )}
                   </ListGroup>
                 </Collapse>
-
-                {/* Add New Specialization Form (Visible only for specific doctor) */}
-                <div className="mt-4">
-                  <Form onSubmit={(e) => { e.preventDefault(); handleAddSpecialization(professional.id); }}>
-                    <Form.Group>
-                      <Form.Label>New Specialization</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={newSpecializationName}
-                        onChange={(e) => setNewSpecializationName(e.target.value)}
-                        placeholder="Enter specialization name"
-                        required
-                      />
-                    </Form.Group>
-                    <Form.Group>
-                      <Form.Label>Status</Form.Label>
-                      <ToggleButtonGroup
-                        type="radio"
-                        name="status"
-                        value={newSpecializationStatus}
-                        onChange={handleStatusChange}
-                        required
-                      >
-                        <ToggleButton id="tbg-radio-1" value="Active">
-                          Active
-                        </ToggleButton>
-                        <ToggleButton id="tbg-radio-2" value="Inactive">
-                          Inactive
-                        </ToggleButton>
-                      </ToggleButtonGroup>
-                    </Form.Group>
-                    <Button type="submit" variant="primary">
-                      Add Specialization
-                    </Button>
-                  </Form>
-                </div>
               </Card.Body>
             </Card>
           ))

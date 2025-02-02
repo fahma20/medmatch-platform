@@ -5,8 +5,7 @@
 // HealthcareProfessionals.js
 // HealthcareProfessionals.js
 import React, { useState, useEffect } from 'react';
-import { Button, Form, Card, ListGroup, Collapse, Spinner, Alert, ToggleButtonGroup, ToggleButton, FormCheck } from 'react-bootstrap';
-import { Switch } from 'react-bootstrap';
+import { Button, Form, Card, ListGroup, Collapse, Spinner, Alert, ToggleButtonGroup, ToggleButton } from 'react-bootstrap';
 
 const HealthcareProfessional = () => {
   const [professionals, setProfessionals] = useState([]);
@@ -139,26 +138,6 @@ const HealthcareProfessional = () => {
     setNewSpecializationStatus(value);
   };
 
-  const handleStatusToggle = (professionalId, specializationId) => {
-    setProfessionals(professionals.map(professional => {
-      if (professional.id === professionalId) {
-        return {
-          ...professional,
-          specializations: professional.specializations.map(specialization => {
-            if (specialization.id === specializationId) {
-              return {
-                ...specialization,
-                status: specialization.status === 'Active' ? 'Inactive' : 'Active'
-              };
-            }
-            return specialization;
-          })
-        };
-      }
-      return professional;
-    }));
-  };
-
   if (loading) {
     return (
       <div className="container mt-5 text-center">
@@ -234,16 +213,7 @@ const HealthcareProfessional = () => {
                     {professional.specializations && professional.specializations.length > 0 ? (
                       professional.specializations.map((specialization) => (
                         <ListGroup.Item key={specialization.id}>
-                          <div className="d-flex justify-content-between align-items-center">
-                            <span>{specialization.specialization_name} - {specialization.status}</span>
-                            <FormCheck
-                              type="switch"
-                              id={`status-switch-${specialization.id}`}
-                              label={specialization.status === 'Active' ? 'Active' : 'Inactive'}
-                              checked={specialization.status === 'Active'}
-                              onChange={() => handleStatusToggle(professional.id, specialization.id)}
-                            />
-                          </div>
+                          {specialization.specialization_name} - {specialization.status}
                         </ListGroup.Item>
                       ))
                     ) : (
