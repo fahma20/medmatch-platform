@@ -79,7 +79,7 @@ import { Button, Form, Card, Row, Col } from 'react-bootstrap';
 const Specialization = () => {
   const [specializations, setSpecializations] = useState([]);
   const [newSpecialization, setNewSpecialization] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchSpecializations = async () => {
@@ -113,10 +113,11 @@ const Specialization = () => {
     }
   };
 
-  const handleAddSpecialization = async (e) => {
-    e.preventDefault(); // Prevent default form submission to avoid page refresh
-
-    if (!newSpecialization) return; // Don't send if input is empty
+  const handleAddSpecialization = async () => {
+    if (!newSpecialization) {
+      setError('Specialization name is required!');
+      return;
+    }
 
     try {
       const response = await fetch('http://127.0.0.1:5000/api/specializations', {
@@ -134,10 +135,14 @@ const Specialization = () => {
           addedSpecialization,
         ]);
         setNewSpecialization('');
-        setSuccessMessage('Specialization added successfully!');
+        setError('');
+      } else {
+        const errorData = await response.json();
+        setError(errorData.error || 'Failed to add specialization');
       }
     } catch (error) {
       console.error('Error adding specialization:', error);
+      setError('Error adding specialization');
     }
   };
 
@@ -145,27 +150,25 @@ const Specialization = () => {
     <div className="container mt-5">
       <h2 className="text-center mb-4">The Specializations We Offer</h2>
       
-      {/* Display Success Message */}
-      {successMessage && <div className="alert alert-success">{successMessage}</div>}
+      {/* Error Handling */}
+      {error && <div className="alert alert-danger">{error}</div>}
 
       {/* Add Specialization Form */}
-      <Form onSubmit={handleAddSpecialization}>
-        <Row className="mb-4">
-          <Col md={8}>
-            <Form.Control
-              type="text"
-              placeholder="Enter new specialization"
-              value={newSpecialization}
-              onChange={(e) => setNewSpecialization(e.target.value)}
-            />
-          </Col>
-          <Col md={4}>
-            <Button type="submit" variant="dark">
-              Add Specialization
-            </Button>
-          </Col>
-        </Row>
-      </Form>
+      <Row className="mb-4">
+        <Col md={8}>
+          <Form.Control
+            type="text"
+            placeholder="Enter new specialization"
+            value={newSpecialization}
+            onChange={(e) => setNewSpecialization(e.target.value)}
+          />
+        </Col>
+        <Col md={4}>
+          <Button variant="dark" onClick={handleAddSpecialization}>
+            Add Specialization
+          </Button>
+        </Col>
+      </Row>
 
       {/* Display Specializations */}
       <div>

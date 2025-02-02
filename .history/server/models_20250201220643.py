@@ -47,7 +47,7 @@ class HealthcareProfessional(db.Model):
         return {
             'id': self.id,
             'name': self.name,
-            'specializations': [ps.to_dict() for ps in self.specializations]  # Include specializations with status
+        
         }
 
 

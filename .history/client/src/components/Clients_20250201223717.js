@@ -142,7 +142,7 @@ const Clients = () => {
           </div>
 
           {/* Smaller size button */}
-          <button type="submit" className="btn btn-dark btn-sm w-100">
+          <button type="submit" className="btn btn-primary btn-sm w-100">
             {loading ? 'Adding Client...' : 'Add Client'}
           </button>
         </Form>

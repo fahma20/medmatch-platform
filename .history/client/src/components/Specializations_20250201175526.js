@@ -113,9 +113,7 @@ const Specialization = () => {
     }
   };
 
-  const handleAddSpecialization = async (e) => {
-    e.preventDefault(); // Prevent default form submission to avoid page refresh
-
+  const handleAddSpecialization = async () => {
     if (!newSpecialization) return; // Don't send if input is empty
 
     try {
@@ -149,23 +147,21 @@ const Specialization = () => {
       {successMessage && <div className="alert alert-success">{successMessage}</div>}
 
       {/* Add Specialization Form */}
-      <Form onSubmit={handleAddSpecialization}>
-        <Row className="mb-4">
-          <Col md={8}>
-            <Form.Control
-              type="text"
-              placeholder="Enter new specialization"
-              value={newSpecialization}
-              onChange={(e) => setNewSpecialization(e.target.value)}
-            />
-          </Col>
-          <Col md={4}>
-            <Button type="submit" variant="dark">
-              Add Specialization
-            </Button>
-          </Col>
-        </Row>
-      </Form>
+      <Row className="mb-4">
+        <Col md={8}>
+          <Form.Control
+            type="text"
+            placeholder="Enter new specialization"
+            value={newSpecialization}
+            onChange={(e) => setNewSpecialization(e.target.value)}
+          />
+        </Col>
+        <Col md={4}>
+          <Button variant="dark" onClick={handleAddSpecialization}>
+            Add Specialization
+          </Button>
+        </Col>
+      </Row>
 
       {/* Display Specializations */}
       <div>

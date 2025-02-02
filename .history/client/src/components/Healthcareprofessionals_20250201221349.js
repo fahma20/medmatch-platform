@@ -5,32 +5,31 @@
 // HealthcareProfessionals.js
 // HealthcareProfessionals.js
 import React, { useState, useEffect } from 'react';
-import { Button, Form, Card, ListGroup, Collapse, Spinner, Alert } from 'react-bootstrap';
+import { Button, Form, Card, ListGroup, Collapse } from 'react-bootstrap';
 
 const HealthcareProfessional = () => {
   const [professionals, setProfessionals] = useState([]);
   const [newProfessionalName, setNewProfessionalName] = useState('');
   const [editingProfessional, setEditingProfessional] = useState(null);
   const [open, setOpen] = useState({}); // For toggling the specialization list visibility
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
+  // Fetch healthcare professionals from the backend
   useEffect(() => {
     fetchHealthcareProfessionals();
   }, []);
 
+  // Function to fetch healthcare professionals
   const fetchHealthcareProfessionals = async () => {
     try {
       const response = await fetch('http://127.0.0.1:5000/api/healthcare_professionals');
       const data = await response.json();
       setProfessionals(data);
-      setLoading(false);
     } catch (error) {
-      setError('Error fetching healthcare professionals');
-      setLoading(false);
+      console.error('Error fetching healthcare professionals', error);
     }
   };
 
+  // Handle adding a new healthcare professional
   const handleAddProfessional = async (e) => {
     e.preventDefault();
     const newProfessional = { name: newProfessionalName };
@@ -42,14 +41,15 @@ const HealthcareProfessional = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        setProfessionals([...professionals, data]);
-        setNewProfessionalName('');
+        setProfessionals([...professionals, data]);  // Add the new professional to the list
+        setNewProfessionalName('');  // Clear the input field
       }
     } catch (error) {
       console.error('Error adding healthcare professional', error);
     }
   };
 
+  // Handle deleting a healthcare professional
   const handleDeleteProfessional = async (id) => {
     try {
       const response = await fetch(`http://127.0.0.1:5000/api/healthcare_professionals/${id}`, {
@@ -63,11 +63,13 @@ const HealthcareProfessional = () => {
     }
   };
 
+  // Handle editing a healthcare professional
   const handleEditProfessional = (professional) => {
     setEditingProfessional(professional);
     setNewProfessionalName(professional.name);
   };
 
+  // Handle updating a healthcare professional
   const handleUpdateProfessional = async () => {
     const updatedProfessional = { name: newProfessionalName };
     try {
@@ -83,39 +85,21 @@ const HealthcareProfessional = () => {
             professional.id === editingProfessional.id ? data : professional
           )
         );
-        setEditingProfessional(null);
-        setNewProfessionalName('');
+        setEditingProfessional(null);  // Clear editing state
+        setNewProfessionalName('');  // Clear input field
       }
     } catch (error) {
       console.error('Error updating healthcare professional', error);
     }
   };
 
+  // Toggle specializations for each professional
   const handleToggleSpecializations = (id) => {
     setOpen((prevState) => ({
       ...prevState,
       [id]: !prevState[id],
     }));
   };
-
-  if (loading) {
-    return (
-      <div className="container mt-5 text-center">
-        <Spinner animation="border" variant="primary" />
-        <p>Loading healthcare professionals...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="container mt-5">
-        <Alert variant="danger">
-          <strong>{error}</strong>
-        </Alert>
-      </div>
-    );
-  }
 
   return (
     <div className="container mt-5">
@@ -172,9 +156,7 @@ const HealthcareProfessional = () => {
                   <ListGroup className="mt-3">
                     {professional.specializations && professional.specializations.length > 0 ? (
                       professional.specializations.map((specialization) => (
-                        <ListGroup.Item key={specialization.id}>
-                          {specialization.specialization_name} - {specialization.status}
-                        </ListGroup.Item>
+                        <ListGroup.Item key={specialization.id}>{specialization.specialization_name} - {specialization.status}</ListGroup.Item>
                       ))
                     ) : (
                       <ListGroup.Item>No Specializations</ListGroup.Item>

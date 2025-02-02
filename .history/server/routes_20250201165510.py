@@ -1,7 +1,8 @@
 # routes.py
 from flask import Blueprint, request, jsonify
 from flask_restful import Api, Resource
-from .models import db, HealthcareProfessional, Specialization, Appointment, Client, ProfessionalSpecialization
+from .models import db, HealthcareProfessional, Specialization, Appointment, Client, 
+
 
 api_bp = Blueprint('api', __name__)
 
@@ -53,22 +54,13 @@ class SpecializationResource(Resource):
 
     # Create
     def post(self):
-        data = request.get_json()  # Parse the incoming JSON
+        data = request.get_json()
         if not data.get('name'):
-            return jsonify({"error": "Name is required"}), 400  # Check if 'name' is provided
-        
-        # Check for existing specialization with the same name (optional)
-        existing_specialization = Specialization.query.filter_by(name=data['name']).first()
-        if existing_specialization:
-            return jsonify({"error": "Specialization with this name already exists."}), 400
-        
-        try:
-            new_specialization = Specialization(name=data['name'])  # Create a new specialization
-            db.session.add(new_specialization)  # Add it to the session
-            db.session.commit()  # Commit to save it to the database
-            return jsonify(new_specialization.to_dict()), 201  # Return the created specialization
-        except Exception as e:
-            return jsonify({"error": f"An error occurred while creating the specialization: {str(e)}"}), 500
+            return jsonify({"error": "Name is required"}), 400
+        new_specialization = Specialization(name=data['name'])
+        db.session.add(new_specialization)
+        db.session.commit()
+        return jsonify(new_specialization.to_dict()), 201
 
     # Update
     def put(self, id):
@@ -162,86 +154,64 @@ class ClientResource(Resource):
         db.session.commit()
         return jsonify({"message": f"Client with ID {id} deleted."})
 
+        # ProfessionalSpecialization Resource
 class ProfessionalSpecializationResource(Resource):
     # Read (All Items)
     def get(self):
-        try:
-            professional_specializations = ProfessionalSpecialization.query.all()
-            return jsonify([ps.to_dict() for ps in professional_specializations])
-        except Exception as e:
-            print(f"Error fetching professional specializations: {e}")
-            return jsonify({"error": f"Error fetching professional specializations: {str(e)}"}), 500
+        professional_specializations = ProfessionalSpecialization.query.all()
+        return jsonify([ps.to_dict() for ps in professional_specializations])
 
-class ProfessionalSpecializationDetailResource(Resource):
     # Read (Single Item)
     def get(self, id):
-        try:
-            ps = ProfessionalSpecialization.query.get_or_404(id)
-            return jsonify(ps.to_dict())
-        except Exception as e:
-            print(f"Error fetching professional specialization with ID {id}: {e}")
-            return jsonify({"error": f"Error fetching professional specialization with ID {id}: {str(e)}"}), 500
+        ps = ProfessionalSpecialization.query.get_or_404(id)
+        return jsonify(ps.to_dict())
+
+    # Create
+    def post(self):
+        data = request.get_json()
+        healthcare_professional_id = data.get('healthcare_professional_id')
+        specialization_id = data.get('specialization_id')
+        status = data.get('status', 'Active')  # Default to 'Active' if no status provided
+
+        if not healthcare_professional_id or not specialization_id:
+            return jsonify({"error": "Healthcare professional ID and Specialization ID are required"}), 400
+        
+        # Check if this relationship already exists
+        existing_ps = ProfessionalSpecialization.query.filter_by(
+            healthcare_professional_id=healthcare_professional_id,
+            specialization_id=specialization_id
+        ).first()
+        
+        if existing_ps:
+            return jsonify({"message": "This professional already has this specialization."}), 400
+
+        new_ps = ProfessionalSpecialization(
+            healthcare_professional_id=healthcare_professional_id,
+            specialization_id=specialization_id,
+            status=status
+        )
+        
+        db.session.add(new_ps)
+        db.session.commit()
+        return jsonify(new_ps.to_dict()), 201
 
     # Update (Modify status)
     def put(self, id):
-        try:
-            ps = ProfessionalSpecialization.query.get_or_404(id)
-            data = request.get_json()
+        ps = ProfessionalSpecialization.query.get_or_404(id)
+        data = request.get_json()
 
-            if 'status' in data:
-                ps.status = data['status']
-            
-            db.session.commit()
-            return jsonify(ps.to_dict())
-        except Exception as e:
-            print(f"Error updating professional specialization with ID {id}: {e}")
-            return jsonify({"error": f"Error updating professional specialization with ID {id}: {str(e)}"}), 500
+        if 'status' in data:
+            ps.status = data['status']
+        
+        db.session.commit()
+        return jsonify(ps.to_dict())
 
     # Delete
     def delete(self, id):
-        try:
-            ps = ProfessionalSpecialization.query.get_or_404(id)
-            db.session.delete(ps)
-            db.session.commit()
-            return jsonify({"message": f"Professional specialization with ID {id} deleted."})
-        except Exception as e:
-            print(f"Error deleting professional specialization with ID {id}: {e}")
-            return jsonify({"error": f"Error deleting professional specialization with ID {id}: {str(e)}"}), 500
-
-class ProfessionalSpecializationCreateResource(Resource):
-    # Create
-    def post(self):
-        try:
-            data = request.get_json()
-            healthcare_professional_id = data.get('healthcare_professional_id')
-            specialization_id = data.get('specialization_id')
-            status = data.get('status', 'Active')  # Default to 'Active' if no status provided
-
-            if not healthcare_professional_id or not specialization_id:
-                return jsonify({"error": "Healthcare professional ID and Specialization ID are required"}), 400
-            
-            # Check if this relationship already exists
-            existing_ps = ProfessionalSpecialization.query.filter_by(
-                healthcare_professional_id=healthcare_professional_id,
-                specialization_id=specialization_id
-            ).first()
-            
-            if existing_ps:
-                return jsonify({"message": "This professional already has this specialization."}), 400
-
-            new_ps = ProfessionalSpecialization(
-                healthcare_professional_id=healthcare_professional_id,
-                specialization_id=specialization_id,
-                status=status
-            )
-            
-            db.session.add(new_ps)
-            db.session.commit()
-            return jsonify(new_ps.to_dict()), 201
-        except Exception as e:
-            print(f"Error creating professional specialization: {e}")
-            return jsonify({"error": f"Error creating professional specialization: {str(e)}"}), 500
-
+        ps = ProfessionalSpecialization.query.get_or_404(id)
+        db.session.delete(ps)
+        db.session.commit()
+        return jsonify({"message": f"Professional specialization with ID {id} deleted."})
 
 
 # Register Resources with the API

@@ -74,12 +74,13 @@ export default Specializations;
 
 // Specialization.js
 import React, { useState, useEffect } from 'react';
-import { Button, Form, Card, Row, Col } from 'react-bootstrap';
+import { Modal, Button, Form, Card, Alert } from 'react-bootstrap';
 
 const Specialization = () => {
   const [specializations, setSpecializations] = useState([]);
+  const [showAddModal, setShowAddModal] = useState(false);
   const [newSpecialization, setNewSpecialization] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchSpecializations = async () => {
@@ -89,6 +90,7 @@ const Specialization = () => {
         setSpecializations(data);
       } catch (error) {
         console.error('Error fetching specializations:', error);
+        setError('Failed to load specializations.');
       }
     };
     fetchSpecializations();
@@ -113,10 +115,11 @@ const Specialization = () => {
     }
   };
 
-  const handleAddSpecialization = async (e) => {
-    e.preventDefault(); // Prevent default form submission to avoid page refresh
-
-    if (!newSpecialization) return; // Don't send if input is empty
+  const handleAddSpecialization = async () => {
+    if (!newSpecialization) {
+      setError('Specialization name is required!');
+      return;
+    }
 
     try {
       const response = await fetch('http://127.0.0.1:5000/api/specializations', {
@@ -127,55 +130,45 @@ const Specialization = () => {
         body: JSON.stringify({ name: newSpecialization }),
       });
 
-      if (response.ok) {
-        const addedSpecialization = await response.json();
-        setSpecializations((prevSpecializations) => [
-          ...prevSpecializations,
-          addedSpecialization,
-        ]);
-        setNewSpecialization('');
-        setSuccessMessage('Specialization added successfully!');
+      if (!response.ok) {
+        console.error('Error adding specialization:', response);
+        return;
       }
+
+      const newSpecializationData = await response.json();
+      setSpecializations([...specializations, newSpecializationData]);
+      setShowAddModal(false);
+      setNewSpecialization('');
+      setError(null);
     } catch (error) {
       console.error('Error adding specialization:', error);
+      setError('Failed to add specialization.');
     }
   };
 
   return (
     <div className="container mt-5">
-      <h2 className="text-center mb-4">The Specializations We Offer</h2>
+      <h2 className="text-center mb-4">Specializations</h2>
       
-      {/* Display Success Message */}
-      {successMessage && <div className="alert alert-success">{successMessage}</div>}
+      {error && <Alert variant="danger">{error}</Alert>}
 
-      {/* Add Specialization Form */}
-      <Form onSubmit={handleAddSpecialization}>
-        <Row className="mb-4">
-          <Col md={8}>
-            <Form.Control
-              type="text"
-              placeholder="Enter new specialization"
-              value={newSpecialization}
-              onChange={(e) => setNewSpecialization(e.target.value)}
-            />
-          </Col>
-          <Col md={4}>
-            <Button type="submit" variant="dark">
-              Add Specialization
-            </Button>
-          </Col>
-        </Row>
-      </Form>
+      <Button
+        variant="primary"
+        className="mb-4"
+        onClick={() => setShowAddModal(true)}
+      >
+        Add Specialization
+      </Button>
 
-      {/* Display Specializations */}
-      <div>
+      <div className="mt-4">
+        <h3>Specializations List</h3>
         {specializations.length === 0 ? (
           <p>No specializations available.</p>
         ) : (
           specializations.map((specialization) => (
             <Card key={specialization.id} className="mb-3 shadow-sm">
-              <Card.Body className="d-flex justify-content-between align-items-center">
-                <h5>{specialization.name}</h5>
+              <Card.Body>
+                <Card.Title>{specialization.name}</Card.Title>
                 <Button
                   variant="danger"
                   onClick={() => handleDelete(specialization.id)}
@@ -187,6 +180,34 @@ const Specialization = () => {
           ))
         )}
       </div>
+
+      {/* Modal for adding specialization */}
+      <Modal show={showAddModal} onHide={() => setShowAddModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Add Specialization</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group controlId="specializationName">
+              <Form.Label>Specialization Name</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter specialization name"
+                value={newSpecialization}
+                onChange={(e) => setNewSpecialization(e.target.value)}
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowAddModal(false)}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleAddSpecialization}>
+            Add Specialization
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

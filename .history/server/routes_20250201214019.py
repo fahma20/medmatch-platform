@@ -162,6 +162,7 @@ class ClientResource(Resource):
         db.session.commit()
         return jsonify({"message": f"Client with ID {id} deleted."})
 
+        # ProfessionalSpecialization Resource
 class ProfessionalSpecializationResource(Resource):
     # Read (All Items)
     def get(self):
@@ -241,7 +242,6 @@ class ProfessionalSpecializationCreateResource(Resource):
         except Exception as e:
             print(f"Error creating professional specialization: {e}")
             return jsonify({"error": f"Error creating professional specialization: {str(e)}"}), 500
-
 
 
 # Register Resources with the API

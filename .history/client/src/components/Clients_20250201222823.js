@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { Toast } from 'react-bootstrap'; // We'll use React Bootstrap for notifications
 
 const Clients = () => {
   const [clients, setClients] = useState([]);
@@ -41,7 +40,7 @@ const Clients = () => {
   const handleSubmit = async (values, { resetForm }) => {
     setSuccessMessage(null);
     setErrorMessage(null);
-
+  
     try {
       const response = await fetch('http://127.0.0.1:5000/api/clients', {
         method: 'POST',
@@ -50,13 +49,15 @@ const Clients = () => {
         },
         body: JSON.stringify(values),
       });
-
+  
       if (!response.ok) {
+        // If the response status is not OK, handle the error
         const errorData = await response.json();
         setErrorMessage(errorData.error || 'Failed to add client.');
         return;
       }
-
+  
+      // If the response is OK, handle the success
       const newClient = await response.json();
       setClients((prevClients) => [...prevClients, newClient]); // Add the new client to the list
       setSuccessMessage('Client added successfully!');
@@ -66,6 +67,7 @@ const Clients = () => {
       setErrorMessage('Error adding client. Please try again.');
     }
   };
+  
 
   // Handle deleting a client
   const handleDelete = async (id) => {
@@ -92,22 +94,12 @@ const Clients = () => {
   };
 
   return (
-    <div className="container my-4">
-      <h2 className="text-center mb-4">Clients Management</h2>
+    <div>
+      <h2>Clients</h2>
 
-      {/* Success and Error Toasts */}
-      {successMessage && (
-        <Toast bg="success" className="mb-3" onClose={() => setSuccessMessage(null)}>
-          <Toast.Body>{successMessage}</Toast.Body>
-        </Toast>
-      )}
-      {errorMessage && (
-        <Toast bg="danger" className="mb-3" onClose={() => setErrorMessage(null)}>
-          <Toast.Body>{errorMessage}</Toast.Body>
-        </Toast>
-      )}
+      {successMessage && <div className="alert alert-success">{successMessage}</div>}
+      {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
 
-      {/* Client Form */}
       <Formik
         initialValues={{
           name: '',
@@ -117,7 +109,7 @@ const Clients = () => {
         onSubmit={handleSubmit}
       >
         <Form>
-          <div className="form-group mb-3">
+          <div className="form-group">
             <label htmlFor="name">Client Name</label>
             <Field
               type="text"
@@ -129,7 +121,7 @@ const Clients = () => {
             <ErrorMessage name="name" component="div" className="text-danger" />
           </div>
 
-          <div className="form-group mb-3">
+          <div className="form-group">
             <label htmlFor="email">Client Email</label>
             <Field
               type="email"
@@ -141,44 +133,29 @@ const Clients = () => {
             <ErrorMessage name="email" component="div" className="text-danger" />
           </div>
 
-          {/* Smaller size button */}
-          <button type="submit" className="btn btn-dark btn-sm w-100">
-            {loading ? 'Adding Client...' : 'Add Client'}
-          </button>
+          <button type="submit" className="btn btn-primary">Add Client</button>
         </Form>
       </Formik>
 
-      {/* Clients List */}
       <div className="mt-4">
         <h3>Clients List</h3>
-        {loading ? (
-          <div className="text-center">
-            <div className="spinner-border" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-          </div>
-        ) : clients.length === 0 ? (
-          <p className="text-center">No clients available.</p>
+        {clients.length === 0 ? (
+          <p>No clients available.</p>
         ) : (
-          <div className="row">
-            {clients.map((client) => (
-              <div key={client.id} className="col-md-4 mb-4">
-                <div className="card shadow-sm">
-                  <div className="card-body">
-                    {/* Changed client name color */}
-                    <h5 className="card-title text-primary">{client.name}</h5> {/* Added text-primary for blue color */}
-                    <p className="card-text"><strong>Email:</strong> {client.email}</p>
-                    <button
-                      className="btn btn-dark w-100"
-                      onClick={() => handleDelete(client.id)}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
+          clients.map((client) => (
+            <div key={client.id} className="card mb-3">
+              <div className="card-body">
+                <h5 className="card-title">{client.name}</h5>
+                <p className="card-text"><strong>Email:</strong> {client.email}</p>
+                <button
+                  className="btn btn-danger"
+                  onClick={() => handleDelete(client.id)}
+                >
+                  Delete
+                </button>
               </div>
-            ))}
-          </div>
+            </div>
+          ))
         )}
       </div>
     </div>
@@ -186,3 +163,6 @@ const Clients = () => {
 };
 
 export default Clients;
+
+
+// Client.js

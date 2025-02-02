@@ -74,12 +74,10 @@ export default Specializations;
 
 // Specialization.js
 import React, { useState, useEffect } from 'react';
-import { Button, Form, Card, Row, Col } from 'react-bootstrap';
 
 const Specialization = () => {
   const [specializations, setSpecializations] = useState([]);
   const [newSpecialization, setNewSpecialization] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     const fetchSpecializations = async () => {
@@ -94,6 +92,7 @@ const Specialization = () => {
     fetchSpecializations();
   }, []);
 
+  // Handle delete functionality
   const handleDelete = async (id) => {
     try {
       const response = await fetch(`http://127.0.0.1:5000/api/specializations/${id}`, {
@@ -113,29 +112,28 @@ const Specialization = () => {
     }
   };
 
-  const handleAddSpecialization = async (e) => {
-    e.preventDefault(); // Prevent default form submission to avoid page refresh
-
-    if (!newSpecialization) return; // Don't send if input is empty
+  // Handle add specialization functionality
+  const handleAddSpecialization = async () => {
+    if (!newSpecialization) {
+      alert('Specialization name cannot be empty');
+      return;
+    }
 
     try {
       const response = await fetch('http://127.0.0.1:5000/api/specializations', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: newSpecialization }),
       });
 
-      if (response.ok) {
-        const addedSpecialization = await response.json();
-        setSpecializations((prevSpecializations) => [
-          ...prevSpecializations,
-          addedSpecialization,
-        ]);
-        setNewSpecialization('');
-        setSuccessMessage('Specialization added successfully!');
+      if (!response.ok) {
+        console.error('Failed to add specialization');
+        return;
       }
+
+      const addedSpecialization = await response.json();
+      setSpecializations([...specializations, addedSpecialization]);
+      setNewSpecialization('');
     } catch (error) {
       console.error('Error adding specialization:', error);
     }
@@ -143,47 +141,40 @@ const Specialization = () => {
 
   return (
     <div className="container mt-5">
-      <h2 className="text-center mb-4">The Specializations We Offer</h2>
-      
-      {/* Display Success Message */}
-      {successMessage && <div className="alert alert-success">{successMessage}</div>}
+      <h2 className="text-center mb-4">Specializations</h2>
 
-      {/* Add Specialization Form */}
-      <Form onSubmit={handleAddSpecialization}>
-        <Row className="mb-4">
-          <Col md={8}>
-            <Form.Control
-              type="text"
-              placeholder="Enter new specialization"
-              value={newSpecialization}
-              onChange={(e) => setNewSpecialization(e.target.value)}
-            />
-          </Col>
-          <Col md={4}>
-            <Button type="submit" variant="dark">
-              Add Specialization
-            </Button>
-          </Col>
-        </Row>
-      </Form>
+      {/* Add New Specialization */}
+      <div className="mb-4">
+        <h3>The Specializations We Offer</h3>
+        <input
+          type="text"
+          className="form-control mb-2"
+          value={newSpecialization}
+          onChange={(e) => setNewSpecialization(e.target.value)}
+          placeholder="Enter new specialization name"
+        />
+        <button className="btn btn-dark" onClick={handleAddSpecialization}>
+          Add Specialization
+        </button>
+      </div>
 
-      {/* Display Specializations */}
-      <div>
+      {/* Specializations List */}
+      <div className="mt-4">
         {specializations.length === 0 ? (
           <p>No specializations available.</p>
         ) : (
           specializations.map((specialization) => (
-            <Card key={specialization.id} className="mb-3 shadow-sm">
-              <Card.Body className="d-flex justify-content-between align-items-center">
-                <h5>{specialization.name}</h5>
-                <Button
-                  variant="danger"
+            <div key={specialization.id} className="card mb-3 shadow-sm">
+              <div className="card-body d-flex justify-content-between align-items-center">
+                <h5 className="card-title">{specialization.name}</h5>
+                <button
+                  className="btn btn-dark"
                   onClick={() => handleDelete(specialization.id)}
                 >
                   Delete
-                </Button>
-              </Card.Body>
-            </Card>
+                </button>
+              </div>
+            </div>
           ))
         )}
       </div>

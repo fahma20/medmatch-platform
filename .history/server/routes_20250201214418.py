@@ -162,6 +162,7 @@ class ClientResource(Resource):
         db.session.commit()
         return jsonify({"message": f"Client with ID {id} deleted."})
 
+        # ProfessionalSpecialization Resource
 class ProfessionalSpecializationResource(Resource):
     # Read (All Items)
     def get(self):
@@ -172,43 +173,6 @@ class ProfessionalSpecializationResource(Resource):
             print(f"Error fetching professional specializations: {e}")
             return jsonify({"error": f"Error fetching professional specializations: {str(e)}"}), 500
 
-class ProfessionalSpecializationDetailResource(Resource):
-    # Read (Single Item)
-    def get(self, id):
-        try:
-            ps = ProfessionalSpecialization.query.get_or_404(id)
-            return jsonify(ps.to_dict())
-        except Exception as e:
-            print(f"Error fetching professional specialization with ID {id}: {e}")
-            return jsonify({"error": f"Error fetching professional specialization with ID {id}: {str(e)}"}), 500
-
-    # Update (Modify status)
-    def put(self, id):
-        try:
-            ps = ProfessionalSpecialization.query.get_or_404(id)
-            data = request.get_json()
-
-            if 'status' in data:
-                ps.status = data['status']
-            
-            db.session.commit()
-            return jsonify(ps.to_dict())
-        except Exception as e:
-            print(f"Error updating professional specialization with ID {id}: {e}")
-            return jsonify({"error": f"Error updating professional specialization with ID {id}: {str(e)}"}), 500
-
-    # Delete
-    def delete(self, id):
-        try:
-            ps = ProfessionalSpecialization.query.get_or_404(id)
-            db.session.delete(ps)
-            db.session.commit()
-            return jsonify({"message": f"Professional specialization with ID {id} deleted."})
-        except Exception as e:
-            print(f"Error deleting professional specialization with ID {id}: {e}")
-            return jsonify({"error": f"Error deleting professional specialization with ID {id}: {str(e)}"}), 500
-
-class ProfessionalSpecializationCreateResource(Resource):
     # Create
     def post(self):
         try:
@@ -242,6 +206,31 @@ class ProfessionalSpecializationCreateResource(Resource):
             print(f"Error creating professional specialization: {e}")
             return jsonify({"error": f"Error creating professional specialization: {str(e)}"}), 500
 
+    # Update (Modify status)
+    def put(self, id):
+        try:
+            ps = ProfessionalSpecialization.query.get_or_404(id)
+            data = request.get_json()
+
+            if 'status' in data:
+                ps.status = data['status']
+            
+            db.session.commit()
+            return jsonify(ps.to_dict())
+        except Exception as e:
+            print(f"Error updating professional specialization with ID {id}: {e}")
+            return jsonify({"error": f"Error updating professional specialization with ID {id}: {str(e)}"}), 500
+
+    # Delete
+    def delete(self, id):
+        try:
+            ps = ProfessionalSpecialization.query.get_or_404(id)
+            db.session.delete(ps)
+            db.session.commit()
+            return jsonify({"message": f"Professional specialization with ID {id} deleted."})
+        except Exception as e:
+            print(f"Error deleting professional specialization with ID {id}: {e}")
+            return jsonify({"error": f"Error deleting professional specialization with ID {id}: {str(e)}"}), 500
 
 
 # Register Resources with the API

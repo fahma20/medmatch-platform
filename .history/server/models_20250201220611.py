@@ -47,7 +47,7 @@ class HealthcareProfessional(db.Model):
         return {
             'id': self.id,
             'name': self.name,
-            'specializations': [ps.to_dict() for ps in self.specializations]  # Include specializations with status
+        
         }
 
 
@@ -74,18 +74,18 @@ class ProfessionalSpecialization(db.Model):
     specialization_id = db.Column(db.Integer, db.ForeignKey('specializations.id'), nullable=False)
     status = db.Column(db.String(50), default='Active')  # User-submittable field, can be 'Active', 'Inactive', etc.
 
+    # Define the relationships
     healthcare_professional = db.relationship('HealthcareProfessional', back_populates='specializations')
     specialization = db.relationship('Specialization', back_populates='healthcare_professionals')
 
     def to_dict(self):
-        return {
+        return { 
             'id': self.id,
             'healthcare_professional_id': self.healthcare_professional_id,
             'specialization_id': self.specialization_id,
-            'status': self.status,
-            'specialization_name': self.specialization.name  # Include specialization name for easier frontend display
+            'status': self.status
+            'specialization_name': self.specialization.name,
         }
-
 
 # Appointment Model (Many-to-One Relationships with both Client and HealthcareProfessional)
 class Appointment(db.Model):

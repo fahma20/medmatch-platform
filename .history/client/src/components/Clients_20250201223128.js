@@ -141,8 +141,7 @@ const Clients = () => {
             <ErrorMessage name="email" component="div" className="text-danger" />
           </div>
 
-          {/* Smaller size button */}
-          <button type="submit" className="btn btn-dark btn-sm w-100">
+          <button type="submit" className="btn btn-primary w-100">
             {loading ? 'Adding Client...' : 'Add Client'}
           </button>
         </Form>
@@ -165,11 +164,10 @@ const Clients = () => {
               <div key={client.id} className="col-md-4 mb-4">
                 <div className="card shadow-sm">
                   <div className="card-body">
-                    {/* Changed client name color */}
-                    <h5 className="card-title text-primary">{client.name}</h5> {/* Added text-primary for blue color */}
+                    <h5 className="card-title">{client.name}</h5>
                     <p className="card-text"><strong>Email:</strong> {client.email}</p>
                     <button
-                      className="btn btn-dark w-100"
+                      className="btn btn-danger w-100"
                       onClick={() => handleDelete(client.id)}
                     >
                       Delete
