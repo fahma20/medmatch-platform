@@ -20,31 +20,23 @@ const Navbar = () => {
         </button>
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto">
-            <li className="nav-item mx-3">
-              <Link 
-                className="nav-link text-white" 
-                to="/healthcare-professionals">
+            <li className="nav-item mx-2">
+              <Link className="nav-link text-white p-3 border rounded" to="/healthcare-professionals">
                 Healthcare Professionals
               </Link>
             </li>
-            <li className="nav-item mx-3">
-              <Link 
-                className="nav-link text-white" 
-                to="/clients">
+            <li className="nav-item mx-2">
+              <Link className="nav-link text-white p-3 border rounded" to="/clients">
                 Clients
               </Link>
             </li>
-            <li className="nav-item mx-3">
-              <Link 
-                className="nav-link text-white" 
-                to="/appointments">
+            <li className="nav-item mx-2">
+              <Link className="nav-link text-white p-3 border rounded" to="/appointments">
                 Appointments
               </Link>
             </li>
-            <li className="nav-item mx-3">
-              <Link 
-                className="nav-link text-white" 
-                to="/specializations">
+            <li className="nav-item mx-2">
+              <Link className="nav-link text-white p-3 border rounded" to="/specializations">
                 Specializations
               </Link>
             </li>

@@ -19,34 +19,18 @@ const Navbar = () => {
           <span className="navbar-toggler-icon"></span>
         </button>
         <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav ms-auto">
-            <li className="nav-item mx-3">
-              <Link 
-                className="nav-link text-white" 
-                to="/healthcare-professionals">
-                Healthcare Professionals
-              </Link>
+          <ul className="navbar-nav">
+            <li className="nav-item">
+              <Link className="nav-link text-white" to="/healthcare-professionals">Healthcare Professionals</Link>
             </li>
-            <li className="nav-item mx-3">
-              <Link 
-                className="nav-link text-white" 
-                to="/clients">
-                Clients
-              </Link>
+            <li className="nav-item">
+              <Link className="nav-link text-white" to="/clients">Clients</Link>
             </li>
-            <li className="nav-item mx-3">
-              <Link 
-                className="nav-link text-white" 
-                to="/appointments">
-                Appointments
-              </Link>
+            <li className="nav-item">
+              <Link className="nav-link text-white" to="/appointments">Appointments</Link>
             </li>
-            <li className="nav-item mx-3">
-              <Link 
-                className="nav-link text-white" 
-                to="/specializations">
-                Specializations
-              </Link>
+            <li className="nav-item">
+              <Link className="nav-link text-white" to="/specializations">Specializations</Link>
             </li>
           </ul>
         </div>

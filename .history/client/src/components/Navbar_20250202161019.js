@@ -21,30 +21,22 @@ const Navbar = () => {
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto">
             <li className="nav-item mx-3">
-              <Link 
-                className="nav-link text-white" 
-                to="/healthcare-professionals">
+              <Link className="nav-link text-white p-3 border rounded" style={{ backgroundColor: '#004c47', borderColor: '#003f3b' }} to="/healthcare-professionals">
                 Healthcare Professionals
               </Link>
             </li>
             <li className="nav-item mx-3">
-              <Link 
-                className="nav-link text-white" 
-                to="/clients">
+              <Link className="nav-link text-white p-3 border rounded" style={{ backgroundColor: '#004c47', borderColor: '#003f3b' }} to="/clients">
                 Clients
               </Link>
             </li>
             <li className="nav-item mx-3">
-              <Link 
-                className="nav-link text-white" 
-                to="/appointments">
+              <Link className="nav-link text-white p-3 border rounded" style={{ backgroundColor: '#004c47', borderColor: '#003f3b' }} to="/appointments">
                 Appointments
               </Link>
             </li>
             <li className="nav-item mx-3">
-              <Link 
-                className="nav-link text-white" 
-                to="/specializations">
+              <Link className="nav-link text-white p-3 border rounded" style={{ backgroundColor: '#004c47', borderColor: '#003f3b' }} to="/specializations">
                 Specializations
               </Link>
             </li>

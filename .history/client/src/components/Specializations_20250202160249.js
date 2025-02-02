@@ -203,8 +203,7 @@ const Specialization = () => {
               }}
             >
               <Card.Body className="d-flex justify-content-between align-items-center">
-                {/* Change the text color of specialization to black */}
-                <h5 style={{ color: 'black' }}>{specialization.name}</h5>
+                <h5 style={{ color: '#004d40' }}>{specialization.name}</h5> {/* Dark teal for text */}
                 <Button
                   variant="danger"
                   onClick={() => handleDelete(specialization.id)}

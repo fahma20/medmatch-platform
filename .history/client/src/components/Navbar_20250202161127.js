@@ -22,28 +22,52 @@ const Navbar = () => {
           <ul className="navbar-nav ms-auto">
             <li className="nav-item mx-3">
               <Link 
-                className="nav-link text-white" 
+                className="nav-link text-white p-3 border rounded" 
+                style={{ 
+                  backgroundColor: '#000000', // Black background 
+                  borderColor: '#333', // Dark border color
+                  borderRadius: '20px', // Smooth corners
+                  transition: 'background-color 0.3s ease' // Smooth transition on hover
+                }} 
                 to="/healthcare-professionals">
                 Healthcare Professionals
               </Link>
             </li>
             <li className="nav-item mx-3">
               <Link 
-                className="nav-link text-white" 
+                className="nav-link text-white p-3 border rounded" 
+                style={{ 
+                  backgroundColor: '#000000', // Black background 
+                  borderColor: '#333', // Dark border color
+                  borderRadius: '20px', // Smooth corners
+                  transition: 'background-color 0.3s ease' // Smooth transition on hover
+                }} 
                 to="/clients">
                 Clients
               </Link>
             </li>
             <li className="nav-item mx-3">
               <Link 
-                className="nav-link text-white" 
+                className="nav-link text-white p-3 border rounded" 
+                style={{ 
+                  backgroundColor: '#000000', // Black background 
+                  borderColor: '#333', // Dark border color
+                  borderRadius: '20px', // Smooth corners
+                  transition: 'background-color 0.3s ease' // Smooth transition on hover
+                }} 
                 to="/appointments">
                 Appointments
               </Link>
             </li>
             <li className="nav-item mx-3">
               <Link 
-                className="nav-link text-white" 
+                className="nav-link text-white p-3 border rounded" 
+                style={{ 
+                  backgroundColor: '#000000', // Black background 
+                  borderColor: '#333', // Dark border color
+                  borderRadius: '20px', // Smooth corners
+                  transition: 'background-color 0.3s ease' // Smooth transition on hover
+                }} 
                 to="/specializations">
                 Specializations
               </Link>

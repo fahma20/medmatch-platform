@@ -205,6 +205,7 @@ const HealthcareProfessional = () => {
           />
         </Form.Group>
 
+      
         <Button
           type="button"
           variant="success"
@@ -231,20 +232,17 @@ const HealthcareProfessional = () => {
                 <div className="d-flex justify-content-between align-items-center">
                   <h5 className="card-title" style={{ color: '#333' }}>{professional.name}</h5>
                   <Button
-                    variant="success" // Change to teal for consistent theme
+                    variant="danger"
                     onClick={() => handleDeleteProfessional(professional.id)}
-                    style={{
-                      backgroundColor: '#008080', 
-                      borderColor: '#008080',
-                    }}
+                    style={{ backgroundColor: '#ff6f61', borderColor: '#ff6f61' }}
                   >
                     Delete
                   </Button>
                 </div>
 
                 {/* Toggle Professional Status */}
-                <div className="d-flex align-items-center mt-3">
-                  <label className="mr-2" style={{ marginRight: '8px' }}>Status:</label> {/* Space between status and toggle */}
+                <div className="d-flex align-items-center">
+                  <label className="mr-2">Status: </label>
                   <Switch
                     checked={professional.status === 'Active'}
                     onChange={() => handleToggleStatus(professional.id, professional.status)}

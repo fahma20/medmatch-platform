@@ -143,20 +143,10 @@ const Specialization = () => {
 
   return (
     <div className="container mt-5">
-      <h2 className="text-center mb-4" style={{ color: '#005f73' }}>The Specializations We Offer</h2>
+      <h2 className="text-center mb-4">The Specializations We Offer</h2>
       
       {/* Display Success Message */}
-      {successMessage && (
-        <div
-          className="alert"
-          style={{
-            backgroundColor: '#e0f2f1', // Light teal background
-            color: '#00695c', // Dark teal text color
-          }}
-        >
-          {successMessage}
-        </div>
-      )}
+      {successMessage && <div className="alert alert-success">{successMessage}</div>}
 
       {/* Add Specialization Form */}
       <Form onSubmit={handleAddSpecialization}>
@@ -167,21 +157,10 @@ const Specialization = () => {
               placeholder="Enter new specialization"
               value={newSpecialization}
               onChange={(e) => setNewSpecialization(e.target.value)}
-              style={{
-                backgroundColor: '#e0f2f1', // Light teal background
-                borderColor: '#00695c', // Dark teal border color
-              }}
             />
           </Col>
           <Col md={4}>
-            <Button
-              type="submit"
-              variant="success" // Green button
-              style={{
-                backgroundColor: '#00796b', // Teal color for button
-                borderColor: '#004d40', // Darker teal border color
-              }}
-            >
+            <Button type="submit" variant="dark">
               Add Specialization
             </Button>
           </Col>
@@ -194,24 +173,12 @@ const Specialization = () => {
           <p>No specializations available.</p>
         ) : (
           specializations.map((specialization) => (
-            <Card
-              key={specialization.id}
-              className="mb-3 shadow-sm"
-              style={{
-                backgroundColor: '#e0f2f1', // Light teal background for cards
-                border: '1px solid #00796b', // Greenish border for cards
-              }}
-            >
+            <Card key={specialization.id} className="mb-3 shadow-sm">
               <Card.Body className="d-flex justify-content-between align-items-center">
-                {/* Change the text color of specialization to black */}
-                <h5 style={{ color: 'black' }}>{specialization.name}</h5>
+                <h5>{specialization.name}</h5>
                 <Button
                   variant="danger"
                   onClick={() => handleDelete(specialization.id)}
-                  style={{
-                    backgroundColor: '#004d40', // Dark green background
-                    borderColor: '#004d40', // Dark green border
-                  }}
                 >
                   Delete
                 </Button>
